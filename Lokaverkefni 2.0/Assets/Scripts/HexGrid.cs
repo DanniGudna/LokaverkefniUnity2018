@@ -15,14 +15,20 @@ public class HexGrid : MonoBehaviour {
 	Canvas gridCanvas;
 
 	public HexCell cellPrefab;
+	HexMesh hexMesh;
 
 	HexCell[] cells;
+
+	public Color defaultColor = Color.white;
+	public Color touchedColor = Color.magenta;
 
 	//látum alla hexagons í fylki til að geta notað þá betur
 	//búm til alla reitina sem við þurfum
 	void Awake () {
-		//
+		//náum í canvas objectið og látum inn gildi í hann
 		gridCanvas = GetComponentInChildren<Canvas>();
+		//náum í meshið og notum það til að teikna reitina
+		hexMesh = GetComponentInChildren<HexMesh> ();
 		cells = new HexCell[height * width];
 
 		for (int z = 0, i = 0; z < height; z++) {
@@ -31,6 +37,41 @@ public class HexGrid : MonoBehaviour {
 			}
 		}
 	}
+
+	void Start () {
+		hexMesh.Triangulate(cells);
+	}
+
+
+	//verður fært mouse handling
+	void Update () {
+		if (Input.GetMouseButton(0)) {
+			HandleInput();
+		}
+	}
+
+	void HandleInput () {
+		Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+		RaycastHit hit;
+		if (Physics.Raycast(inputRay, out hit)) {
+			TouchCell(hit.point);
+		}
+	}
+
+	void TouchCell (Vector3 position) {
+		position = transform.InverseTransformPoint(position);
+		Coordinates coordinates = Coordinates.FromPosition(position);
+		Debug.Log("touched at " + coordinates.ToString());
+		int index = coordinates.X + coordinates.Z * width + coordinates.Z / 2;
+		HexCell cell = cells[index];
+		cell.color = touchedColor;
+		hexMesh.Triangulate(cells);
+	}
+
+	//end
+
+
+
 	/**
 	 * 
 	 * x, y og z eru hnit hvers cell fyrir sig
@@ -46,20 +87,24 @@ public class HexGrid : MonoBehaviour {
 		HexCell cell = cells[i] = Instantiate<HexCell>(cellPrefab);
 		cell.transform.SetParent(transform, false);
 		cell.transform.localPosition = position;
+		cell.coordinates = Coordinates.offsetCoordinates(x, z);
+		cell.color = defaultColor;
 		//stillum nafnið á nýja objectinu
 		cell.name= "y: " + z + " x: " + x;
 		//development canvas sem teiknar hnitin á reitina
-		drawMarkers(x,z,position);
+		drawMarkers(x,z,position, cell);
 
 	}
 
 	//skrifar textann á hvert cell, notað í development
-	void drawMarkers (int x, int y, Vector3 position){
+	void drawMarkers (int x, int y, Vector3 position, HexCell cell){
 		Text label = Instantiate<Text> (coordinatesPrefab);
 		label.rectTransform.SetParent(gridCanvas.transform, false);
 		label.rectTransform.anchoredPosition =
 			new Vector2(position.x, position.z);
-		label.text = x.ToString() + "\n" + y.ToString();
+		//TODO: breyta , ekki taka inn cell og nota gamla mögulega
+		label.text = cell.coordinates.ToStringOnSeparateLines();
+		//label.text = x.ToString() + "\n" + y.ToString();
 
 	}
 		
