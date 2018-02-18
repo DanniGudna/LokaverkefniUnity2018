@@ -62,6 +62,10 @@ public class HexGrid : MonoBehaviour {
 		position = transform.InverseTransformPoint(position);
 		Coordinates coordinates = Coordinates.FromPosition(position);
 		Debug.Log("touched at " + coordinates.ToString());
+		int index = coordinates.X + coordinates.Z * width + coordinates.Z / 2;
+		HexCell cell = cells[index];
+		cell.color = touchedColor;
+		hexMesh.Triangulate(cells);
 	}
 
 	//end
