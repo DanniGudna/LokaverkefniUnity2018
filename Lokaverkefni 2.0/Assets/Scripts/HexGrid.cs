@@ -6,9 +6,14 @@ using UnityEngine.UI;
 public class HexGrid : MonoBehaviour {
 
 	//breidd borðsins
-	public int width;
+	 int cellCountX;
+	// public int width;
 	//hæð borðsins
-	public int height;
+	int cellCountZ;
+	//public int height;
+
+	public int chunkCountX = 4, chunkCountZ = 3;
+
 
 	//Debug text UI ofan á reitina, vitum þannig hnitin á þeim
 	public Text coordinatesPrefab;
@@ -18,6 +23,9 @@ public class HexGrid : MonoBehaviour {
 	HexMesh hexMesh;
 
 	HexCell[] cells;
+
+	HexMetrics HexMetrics;
+
 
 	public Color defaultColor = Color.white;
 	public Color touchedColor = Color.magenta;
@@ -29,13 +37,10 @@ public class HexGrid : MonoBehaviour {
 		gridCanvas = GetComponentInChildren<Canvas>();
 		//náum í meshið og notum það til að teikna reitina
 		hexMesh = GetComponentInChildren<HexMesh> ();
-		cells = new HexCell[height * width];
 
-		for (int z = 0, i = 0; z < height; z++) {
-			for (int x = 0; x < width; x++) {
-				CreateCell(x, z, i++);
-			}
-		}
+		cellCountX = chunkCountX * HexMetrics.chunkSizeX;
+		cellCountZ = chunkCountZ * HexMetrics.chunkSizeZ;
+
 	}
 
 	void Start () {
@@ -43,9 +48,14 @@ public class HexGrid : MonoBehaviour {
 	}
 
 
-	//verður fært mouse handling
-	void Update () {
+	void CreateMap () {
+		cells = new HexCell[cellCountZ * cellCountX];
 
+		for (int z = 0, i = 0; z < cellCountZ; z++) {
+			for (int x = 0; x < cellCountX; x++) {
+				CreateCell(x, z, i++);
+			}
+		}
 	}
 		
 
@@ -53,7 +63,7 @@ public class HexGrid : MonoBehaviour {
 		position = transform.InverseTransformPoint(position);
 		Coordinates coordinates = Coordinates.FromPosition(position);
 		Debug.Log("touched at " + coordinates.ToString());
-		int index = coordinates.X + coordinates.Z * width + coordinates.Z / 2;
+		int index = coordinates.X + coordinates.Z * cellCountX + coordinates.Z / 2;
 		HexCell cell = cells[index];
 		cell.color = color;
 		//cell.color = touchedColor;
@@ -92,14 +102,14 @@ public class HexGrid : MonoBehaviour {
 		if (z > 0) {
 			//TODO: breyta í %
 			if ((z & 1) == 0) {
-				cell.SetNeighbor (HexDirection.SE, cells [i - width]);
+				cell.SetNeighbor (HexDirection.SE, cells [i - cellCountX]);
 				if (x > 0) {
-					cell.SetNeighbor (HexDirection.SW, cells [i - width - 1]);
+					cell.SetNeighbor (HexDirection.SW, cells [i - cellCountX - 1]);
 				}
 			} else {
-				cell.SetNeighbor (HexDirection.SW, cells [i - width]);
-				if (x < width - 1) {
-					cell.SetNeighbor (HexDirection.SE, cells [i - width + 1]);
+				cell.SetNeighbor (HexDirection.SW, cells [i - cellCountX]);
+				if (x < cellCountX - 1) {
+					cell.SetNeighbor (HexDirection.SE, cells [i - cellCountX + 1]);
 				}
 			}
 		}
