@@ -20,11 +20,11 @@ public class HexGrid : MonoBehaviour {
 	Canvas gridCanvas;
 
 	public HexCell cellPrefab;
+	public HexGridChunk chunkPrefab;
 	HexMesh hexMesh;
 
 	HexCell[] cells;
-
-	HexMetrics HexMetrics;
+	HexGridChunk[] chunks;
 
 
 	public Color defaultColor = Color.white;
@@ -41,6 +41,9 @@ public class HexGrid : MonoBehaviour {
 		cellCountX = chunkCountX * HexMetrics.chunkSizeX;
 		cellCountZ = chunkCountZ * HexMetrics.chunkSizeZ;
 
+		CreateChunks();
+		CreateMap ();
+
 	}
 
 	void Start () {
@@ -54,6 +57,17 @@ public class HexGrid : MonoBehaviour {
 		for (int z = 0, i = 0; z < cellCountZ; z++) {
 			for (int x = 0; x < cellCountX; x++) {
 				CreateCell(x, z, i++);
+			}
+		}
+	}
+
+	void CreateChunks () {
+		chunks = new HexGridChunk[chunkCountX * chunkCountZ];
+
+		for (int z = 0, i = 0; z < chunkCountZ; z++) {
+			for (int x = 0; x < chunkCountX; x++) {
+				HexGridChunk chunk = chunks[i++] = Instantiate(chunkPrefab);
+				chunk.transform.SetParent(transform);
 			}
 		}
 	}
@@ -87,7 +101,7 @@ public class HexGrid : MonoBehaviour {
 		position.z = z * (HexMetrics.outerRadius * 1.5f);
 
 		HexCell cell = cells[i] = Instantiate<HexCell>(cellPrefab);
-		cell.transform.SetParent(transform, false);
+		//cell.transform.SetParent(transform, false);
 		cell.transform.localPosition = position;
 		cell.coordinates = Coordinates.offsetCoordinates(x, z);
 		cell.color = defaultColor;
@@ -122,8 +136,18 @@ public class HexGrid : MonoBehaviour {
 		//development canvas sem teiknar hnitin á reitina
 		drawMarkers(x,z,position, cell);
 
+		AddCellToChunk (x, z, cell);
+	}
 
 
+	void AddCellToChunk (int x, int z, HexCell cell) {
+		int chunkX = x / HexMetrics.chunkSizeX;
+		int chunkZ = z / HexMetrics.chunkSizeZ;
+		HexGridChunk chunk = chunks[chunkX + chunkZ * chunkCountX];
+
+		int localX = x - chunkX * HexMetrics.chunkSizeX;
+		int localZ = z - chunkZ * HexMetrics.chunkSizeZ;
+		chunk.AddCell(localX + localZ * HexMetrics.chunkSizeX, cell);
 	}
 		
 
