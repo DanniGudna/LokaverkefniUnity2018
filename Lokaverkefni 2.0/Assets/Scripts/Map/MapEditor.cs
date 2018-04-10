@@ -12,7 +12,7 @@ public class MapEditor : MonoBehaviour {
 	private Color activeColor;
 
 	// TODO: athuga laga svo þetta sé ekki bara breytt í inspector
-	public bool editMode = false;
+	public bool editMode = true;
 
 	HexCell previousCell;
 
@@ -52,8 +52,14 @@ public class MapEditor : MonoBehaviour {
 		activeColor = colors[index];
 	}
 
+	public void SetEditMode () {
+
+		editMode = !editMode;
+		print (editMode);
+
+	}
+
 	void EditCell (HexCell cell){
-		cell.color = activeColor;
-		hexGrid.Refresh ();
+		cell.Color = activeColor;
 	}
 }

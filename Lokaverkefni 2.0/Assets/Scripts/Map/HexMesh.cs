@@ -70,7 +70,7 @@ public class HexMesh : MonoBehaviour {
 				center + HexMetrics.corners [i+1]
 			);
 
-			AddTriangleColor(cell.color);
+			AddTriangleColor(cell.Color);
 		}
 	}
 

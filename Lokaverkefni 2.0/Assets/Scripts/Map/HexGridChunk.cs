@@ -9,6 +9,7 @@ public class HexGridChunk : MonoBehaviour {
 	HexMesh hexMesh;
 	Canvas gridCanvas;
 
+
 	void Awake () {
 		gridCanvas = GetComponentInChildren<Canvas>();
 		hexMesh = GetComponentInChildren<HexMesh>();
@@ -17,15 +18,24 @@ public class HexGridChunk : MonoBehaviour {
 	}
 
 	void Start () {
-		 hexMesh.Triangulate(cells);
+		// hexMesh.Triangulate(cells);
 	}
 
 
 	public void AddCell (int index, HexCell cell) {
 		cells[index] = cell;
-		// cell.chunk = this;
+		cell.chunk = this;
 		cell.transform.SetParent(transform, false);
 		cell.uiRect.SetParent(gridCanvas.transform, false);
+	}
+
+	public void Refresh () {
+		enabled = true;
+	}
+
+	void LateUpdate () {
+		hexMesh.Triangulate(cells);
+		enabled = false;
 	}
 
 }

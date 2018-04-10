@@ -11,7 +11,22 @@ public class HexCell : MonoBehaviour {
 
 	int distance;
 
-	public Color color;
+	public Color Color {
+		get {
+			return color;
+		}
+		set {
+			if (color == value) {
+				return;
+			}
+			color = value;
+			Refresh();
+		}
+	}
+
+	Color color;
+
+	public HexGridChunk chunk;
 
 	[SerializeField]
 	HexCell[] neighbors;
@@ -25,13 +40,13 @@ public class HexCell : MonoBehaviour {
 			UpdateDistanceLabel();
 		}
 	}
+		
 
 	public HexCell GetNeighbor (HexDirection direction) {
 		return neighbors[(int)direction];
 	}
 
 	void UpdateDistanceLabel () {
-		print ("distanceið " + distance);
 		UnityEngine.UI.Text label = uiRect.GetComponent<UnityEngine.UI.Text>();
 		label.text = distance.ToString ();
 	}
@@ -42,4 +57,11 @@ public class HexCell : MonoBehaviour {
 		neighbors[(int)direction] = cell;
 		cell.neighbors[(int)direction.Opposite()] = this;
 	}
+
+	void Refresh () {
+		if (chunk) {
+			chunk.Refresh ();
+		}
+	}
+
 }

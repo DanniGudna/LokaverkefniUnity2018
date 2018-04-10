@@ -6,13 +6,13 @@ using UnityEngine.UI;
 public class HexGrid : MonoBehaviour {
 
 	//breidd borðsins
-	 int cellCountX = 5;
+	 int cellCountX = 10;
 	// public int width;
 	//hæð borðsins
-	int cellCountZ = 5;
+	int cellCountZ = 10;
 	//public int height;
 
-	public int chunkCountX = 4, chunkCountZ = 3;
+	public int chunkCountX = 2, chunkCountZ = 1;
 
 
 	//Debug text UI ofan á reitina, vitum þannig hnitin á þeim
@@ -159,9 +159,17 @@ public class HexGrid : MonoBehaviour {
 		}
 	}
 
-	// re triangulate cells
-	public void Refresh () {
-		hexMesh.Triangulate (cells);
+	/*
+	public void ColorCell (Vector3 position, Color color) {
+		position = transform.InverseTransformPoint(position);
+		Coordinates coordinates = Coordinates.FromPosition(position);
+		Debug.Log("touched at " + coordinates.ToString());
+		int index = coordinates.X + coordinates.Z * cellCountX + coordinates.Z / 2;
+		HexCell cell = cells[index];
+		cell.color = color;
+		//cell.color = touchedColor;
+		hexMesh.Triangulate(cells);
 	}
+	*/
 		
 }
