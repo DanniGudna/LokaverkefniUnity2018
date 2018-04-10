@@ -17,12 +17,13 @@ public class HexGridChunk : MonoBehaviour {
 	}
 
 	void Start () {
-		hexMesh.Triangulate(cells);
+		 hexMesh.Triangulate(cells);
 	}
 
 
 	public void AddCell (int index, HexCell cell) {
 		cells[index] = cell;
+		// cell.chunk = this;
 		cell.transform.SetParent(transform, false);
 		cell.uiRect.SetParent(gridCanvas.transform, false);
 	}

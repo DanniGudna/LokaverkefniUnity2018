@@ -32,7 +32,7 @@ public class HexCell : MonoBehaviour {
 
 	void UpdateDistanceLabel () {
 		print ("distanceið " + distance);
-		Text label = uiRect.GetComponent<Text> ();
+		UnityEngine.UI.Text label = uiRect.GetComponent<UnityEngine.UI.Text>();
 		label.text = distance.ToString ();
 	}
 
