@@ -72,7 +72,7 @@ public class HexGrid : MonoBehaviour {
 		}
 	}
 		
-
+	/* gamalt ekki notað lengur
 	public void ColorCell (Vector3 position, Color color) {
 		position = transform.InverseTransformPoint(position);
 		Coordinates coordinates = Coordinates.FromPosition(position);
@@ -83,6 +83,7 @@ public class HexGrid : MonoBehaviour {
 		//cell.color = touchedColor;
 		hexMesh.Triangulate(cells);
 	}
+	*/
 
 	//end
 
@@ -106,6 +107,8 @@ public class HexGrid : MonoBehaviour {
 		cell.coordinates = Coordinates.offsetCoordinates(x, z);
 		cell.color = defaultColor;
 
+
+
 		//stillum nágranna
 		//þetta stillir að reiturinn til vinstri ( vestur W) sé nágranni, viljum ekki númer 0
 		//fallið okkar í hex direction mun still svon nágranna til austurs með þessu
@@ -126,6 +129,8 @@ public class HexGrid : MonoBehaviour {
 					cell.SetNeighbor (HexDirection.SE, cells [i - cellCountX + 1]);
 				}
 			}
+
+
 		}
 
 
@@ -134,9 +139,13 @@ public class HexGrid : MonoBehaviour {
 		cell.name= "x: " + x + " y: " + y +" z: " + z;
 
 		//development canvas sem teiknar hnitin á reitina
-		drawMarkers(x,z,position, cell);
+		// drawMarkers(x,z,position, cell);
 
 		AddCellToChunk (x, z, cell);
+
+		Text label = Instantiate<Text> (coordinatesPrefab);
+		// label.text = cell.coordinates.ToStringOnSeparateLines ();
+		cell.uiRect = label.rectTransform;
 	}
 
 
@@ -158,9 +167,41 @@ public class HexGrid : MonoBehaviour {
 		label.rectTransform.anchoredPosition =
 			new Vector2(position.x, position.z);
 		//TODO: breyta , ekki taka inn cell og nota gamla mögulega
-		label.text = cell.coordinates.ToStringOnSeparateLines();
+		// label.text = cell.coordinates.ToStringOnSeparateLines();
 		//label.text = x.ToString() + "\n" + y.ToString();
 
 	}
+
+
+	public void FindDistancesTo (HexCell cell) {
+		for (int i = 0; i < cells.Length; i++) {
+			cell.coordinates.DistanceTo(cells[i].coordinates);
+		}
+	}
+
+	/*public HexCell GetCell (Coordinates coordinates) {
+		int z = coordinates.Z;
+		if (z < 0 || z >= cellCountZ) {
+			return null;
+		}
+		int x = coordinates.X + z / 2;
+		if (x < 0 || x >= cellCountX) {
+			return null;
+		}
+		return cells[x + z * cellCountX];
+	}*/
+
+	public HexCell GetCell (Vector3 position) {
+		position = transform.InverseTransformPoint(position);
+		Coordinates coordinates = Coordinates.FromPosition(position);
+		int index = coordinates.X + coordinates.Z * cellCountX + coordinates.Z / 2;
+		return cells[index];
+	}
+
+	// re triangulate cells
+	public void Refresh () {
+		hexMesh.Triangulate (cells);
+	}
+
 		
 }
