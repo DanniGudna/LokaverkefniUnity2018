@@ -172,7 +172,7 @@ public class HexGrid : MonoBehaviour {
 			frontier.RemoveAt (0);
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
 				HexCell neighbor = current.GetNeighbor (d);
-				if (neighbor == null || neighbor.Distance != int.MaxValue) {
+				if (neighbor == null) {
 					continue;
 				}
 
@@ -182,10 +182,15 @@ public class HexGrid : MonoBehaviour {
 				}
 				int distance = current.Distance;
 				// TODO:
-				distance += current.moveCost;
-
+				distance += neighbor.moveCost;
+				//ef við erum ekki búnir að skoða þenna reit áður
+				if (neighbor.Distance == int.MaxValue) {
 					neighbor.Distance = distance;
 					frontier.Add (neighbor);
+				} else if (distance < neighbor.Distance) {
+					neighbor.Distance = distance;
+				}
+					
 				frontier.Sort((x , y) => x.Distance.CompareTo(y.Distance));
 			
 			}

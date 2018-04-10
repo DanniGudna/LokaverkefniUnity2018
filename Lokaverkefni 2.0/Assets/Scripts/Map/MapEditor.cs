@@ -16,7 +16,7 @@ public class MapEditor : MonoBehaviour {
 	// TODO: athuga laga svo þetta sé ekki bara breytt í inspector
 	public bool editMode = true;
 
-	HexCell previousCell;
+	HexCell previousCell, searchFromCell;
 
 	void Awake () {
 		SelectColor(0);
@@ -39,6 +39,12 @@ public class MapEditor : MonoBehaviour {
 			if (editMode) {
 				EditCell (currentCell);
 				//ATH
+			} else if(Input.GetKey(KeyCode.LeftShift)){
+				if (searchFromCell) {
+					searchFromCell.DisableHighlight ();
+				}
+				searchFromCell = currentCell;
+				searchFromCell.EnableHighlight (Color.blue);
 			} else {
 				hexGrid.FindDistancesTo (currentCell);
 			}
@@ -52,7 +58,7 @@ public class MapEditor : MonoBehaviour {
 
 	public void SelectColor (int index) {
 		activeColor = colors[index];
-		newIndex = index;
+		newIndex = index + 1;
 	}
 		
 	// TODO: ekki nota ?
