@@ -27,8 +27,8 @@ public class HexGrid : MonoBehaviour {
 	HexGridChunk[] chunks;
 
 
-	public Color defaultColor = Color.white;
-	public Color touchedColor = Color.magenta;
+	// public Color defaultColor = Color.white;
+	// public Color touchedColor = Color.magenta;
 
 	void Awake () {
 		CreateMap(cellCountX, cellCountZ);
@@ -64,8 +64,6 @@ public class HexGrid : MonoBehaviour {
 
 	void CreateCells () {
 		cells = new HexCell[cellCountZ * cellCountX];
-		print ("cellcountz " + cellCountZ);
-		print ("cellcountx " + cellCountX);
 
 		for (int z = 0, i = 0; z < cellCountZ; z++) {
 			for (int x = 0; x < cellCountX; x++) {
@@ -106,6 +104,9 @@ public class HexGrid : MonoBehaviour {
 		cell.transform.localPosition = position;
 		cell.coordinates = Coordinates.offsetCoordinates(x, z);
 
+
+		//movemoentCost stilling
+		cell.moveCost = cell.level [cell.index];
 
 
 		//stillum nágranna
@@ -162,18 +163,31 @@ public class HexGrid : MonoBehaviour {
 			cells [i].Distance = int.MaxValue;
 		}
 		WaitForSeconds delay = new WaitForSeconds(1 / 60f);
-		Queue<HexCell> frontier = new Queue<HexCell> ();
+		List<HexCell> frontier = new List<HexCell> ();
 		cell.Distance = 0;
-		frontier.Enqueue (cell);
+		frontier.Add (cell);
 		while (frontier.Count > 0) {
 			yield return delay;
-			HexCell current = frontier.Dequeue ();
+			HexCell current = frontier [0];
+			frontier.RemoveAt (0);
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
 				HexCell neighbor = current.GetNeighbor (d);
-				if(neighbor != null && neighbor.Distance == int.MaxValue){
-					neighbor.Distance = current.Distance + 1;
-					frontier.Enqueue (neighbor);
+				if (neighbor == null || neighbor.Distance != int.MaxValue) {
+					continue;
 				}
+
+				if (!neighbor.passable) {
+					print ("ping");
+					continue;
+				}
+				int distance = current.Distance;
+				// TODO:
+				distance += current.moveCost;
+
+					neighbor.Distance = distance;
+					frontier.Add (neighbor);
+				frontier.Sort((x , y) => x.Distance.CompareTo(y.Distance));
+			
 			}
 		}
 		/*for (int i = 0; i < cells.Length; i++) {

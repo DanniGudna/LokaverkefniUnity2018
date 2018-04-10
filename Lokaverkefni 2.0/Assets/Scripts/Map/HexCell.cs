@@ -7,9 +7,20 @@ public class HexCell : MonoBehaviour {
 
 	public Coordinates coordinates;
 
-	 public RectTransform uiRect;
+	public RectTransform uiRect;
 
 	int distance;
+
+	// TODO: ekki hafa þetta public bara í develop
+	public bool passable = true;
+
+	public int[] level;
+
+	public int moveCost;
+
+	public int index;
+
+	//todo end
 
 	public Color Color {
 		get {

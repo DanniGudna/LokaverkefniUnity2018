@@ -11,6 +11,8 @@ public class MapEditor : MonoBehaviour {
 
 	private Color activeColor;
 
+	private int newIndex;
+
 	// TODO: athuga laga svo þetta sé ekki bara breytt í inspector
 	public bool editMode = true;
 
@@ -50,7 +52,14 @@ public class MapEditor : MonoBehaviour {
 
 	public void SelectColor (int index) {
 		activeColor = colors[index];
+		newIndex = index;
 	}
+		
+	// TODO: ekki nota ?
+	public void ChangeMoveCost (HexCell cell) {
+		cell.moveCost = cell.level[cell.index];
+	}
+		
 
 	public void SetEditMode () {
 
@@ -61,5 +70,6 @@ public class MapEditor : MonoBehaviour {
 
 	void EditCell (HexCell cell){
 		cell.Color = activeColor;
+		cell.moveCost = cell.level [newIndex];
 	}
 }
