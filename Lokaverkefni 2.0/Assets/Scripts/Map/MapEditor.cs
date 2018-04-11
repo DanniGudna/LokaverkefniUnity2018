@@ -16,7 +16,7 @@ public class MapEditor : MonoBehaviour {
 	// TODO: athuga laga svo þetta sé ekki bara breytt í inspector
 	public bool editMode = true;
 
-	HexCell previousCell, searchFromCell;
+	HexCell previousCell, searchFromCell, searchToCell;
 
 	void Awake () {
 		SelectColor(0);
@@ -39,14 +39,21 @@ public class MapEditor : MonoBehaviour {
 			if (editMode) {
 				EditCell (currentCell);
 				//ATH
-			} else if(Input.GetKey(KeyCode.LeftShift)){
+			} else if(Input.GetKey(KeyCode.LeftShift) && searchToCell != currentCell){
 				if (searchFromCell) {
 					searchFromCell.DisableHighlight ();
 				}
 				searchFromCell = currentCell;
-				searchFromCell.EnableHighlight (Color.blue);
-			} else {
-				hexGrid.FindDistancesTo (currentCell);
+				searchFromCell.EnableHighlight (Color.white);
+				if(searchToCell){
+					hexGrid.FindPath(searchFromCell, searchToCell);
+				}
+			} else if(searchFromCell && searchFromCell != currentCell){
+				searchToCell = currentCell;
+				hexGrid.FindPath (searchFromCell, searchToCell);
+			}else {
+				// sýnir allar en þarf ða lagfæra ef ég vill nota þetta aftur
+				// hexGrid.FindPath (currentCell);
 			}
 
 
