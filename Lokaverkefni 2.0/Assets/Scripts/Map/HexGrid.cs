@@ -14,6 +14,7 @@ public class HexGrid : MonoBehaviour {
 
 	public int chunkCountX = 2, chunkCountZ = 1;
 
+	PriorityQueue searchFrontier;
 
 	//Debug text UI ofan á reitina, vitum þannig hnitin á þeim
 	public Text coordinatesPrefab;
@@ -153,23 +154,46 @@ public class HexGrid : MonoBehaviour {
 		chunk.AddCell(localX + localZ * HexMetrics.chunkSizeX, cell);
 	}
 
-	public void FindDistancesTo (HexCell cell) {
+	public void FindPath (HexCell fromCell, HexCell toCell, int speed) {
 		StopAllCoroutines ();
-		StartCoroutine (Search (cell));
+		StartCoroutine (Search (fromCell, toCell, speed));
 	}
+		
 
-	IEnumerator Search (HexCell cell) {
+	IEnumerator Search (HexCell fromCell, HexCell toCell, int speed) {
+		if (searchFrontier == null) {
+			searchFrontier = new PriorityQueue ();
+		} else {
+			searchFrontier.Clear ();
+		}
 		for (int i = 0; i < cells.Length; i++) {
 			cells [i].Distance = int.MaxValue;
+			cells [i].DisableHighlight ();
 		}
-		WaitForSeconds delay = new WaitForSeconds(1 / 60f);
-		List<HexCell> frontier = new List<HexCell> ();
-		cell.Distance = 0;
-		frontier.Add (cell);
-		while (frontier.Count > 0) {
+
+		fromCell.EnableHighlight (Color.white);
+		toCell.EnableHighlight (Color.red);
+		WaitForSeconds delay = new WaitForSeconds (1 / 60f);
+		// List<HexCell> frontier = new List<HexCell> ();
+		fromCell.Distance = 0;
+		searchFrontier.Enqueue (fromCell);
+		// frontier.Add (fromCell);
+
+		while (searchFrontier.Count > 0) {
 			yield return delay;
-			HexCell current = frontier [0];
-			frontier.RemoveAt (0);
+			HexCell current = searchFrontier.Dequeue ();
+			// frontier.RemoveAt (0);
+
+			if (current == toCell) {
+				current = current.PathFrom;
+				while (current != fromCell) {
+					current.EnableHighlight (Color.blue);
+					current = current.PathFrom;
+				}
+				break;
+			}
+			int currentTurn = current.Distance / speed;
+
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
 				HexCell neighbor = current.GetNeighbor (d);
 				if (neighbor == null) {
@@ -177,38 +201,34 @@ public class HexGrid : MonoBehaviour {
 				}
 
 				if (!neighbor.passable) {
-					print ("ping");
 					continue;
 				}
 				int distance = current.Distance;
+				// int moveCost;
 				// TODO:
 				distance += neighbor.moveCost;
+
+				int turn = distance / speed;
 				//ef við erum ekki búnir að skoða þenna reit áður
 				if (neighbor.Distance == int.MaxValue) {
 					neighbor.Distance = distance;
-					frontier.Add (neighbor);
+					neighbor.PathFrom = current;
+					neighbor.searchHueristic = neighbor.coordinates.DistanceTo (toCell.coordinates);
+					//frontier.Add (neighbor);
+					searchFrontier.Enqueue (neighbor);
 				} else if (distance < neighbor.Distance) {
+					int oldPriority = neighbor.SearchPriority;
 					neighbor.Distance = distance;
+					neighbor.PathFrom = current;
+					searchFrontier.Change (neighbor, oldPriority);
 				}
 					
-				frontier.Sort((x , y) => x.Distance.CompareTo(y.Distance));
+				// frontier.Sort((x , y) => x.SearchPriority.CompareTo(y.SearchPriority));
 			
 			}
 		}
-		/*for (int i = 0; i < cells.Length; i++) {
-			yield return delay;
-			cells[i].Distance =
-				cell.coordinates.DistanceTo(cells[i].coordinates);
-		} */
 	}
 
-	/*
-	public void FindDistancesTo (HexCell cell) {
-		for (int i = 0; i < cells.Length; i++) {
-			cells[i].Distance =
-				cell.coordinates.DistanceTo(cells[i].coordinates);
-		}
-	}
 
 	/*
 	public void ColorCell (Vector3 position, Color color) {

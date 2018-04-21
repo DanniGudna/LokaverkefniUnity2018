@@ -22,6 +22,22 @@ public class HexCell : MonoBehaviour {
 
 	//todo end
 
+	//geymir upplysingar um pathið sem er tekið á milli tveggja cells
+	public HexCell PathFrom { get; set;}
+
+	//search hueristic fyrir hvert cell
+	public int searchHueristic { get; set;}
+
+	public int SearchPriority {
+		get {
+			return distance + searchHueristic;
+		}
+	}
+
+	//notað til að gera keðju af listum
+	public HexCell NextWithSamePriority { get; set; }
+
+
 	public Color Color {
 		get {
 			return color;
