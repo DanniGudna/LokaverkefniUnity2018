@@ -154,13 +154,13 @@ public class HexGrid : MonoBehaviour {
 		chunk.AddCell(localX + localZ * HexMetrics.chunkSizeX, cell);
 	}
 
-	public void FindPath (HexCell fromCell, HexCell toCell) {
+	public void FindPath (HexCell fromCell, HexCell toCell, int speed) {
 		StopAllCoroutines ();
-		StartCoroutine (Search (fromCell, toCell));
+		StartCoroutine (Search (fromCell, toCell, speed));
 	}
 		
 
-	IEnumerator Search (HexCell fromCell, HexCell toCell) {
+	IEnumerator Search (HexCell fromCell, HexCell toCell, int speed) {
 		if (searchFrontier == null) {
 			searchFrontier = new PriorityQueue ();
 		} else {
@@ -192,6 +192,8 @@ public class HexGrid : MonoBehaviour {
 				}
 				break;
 			}
+			int currentTurn = current.Distance / speed;
+
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
 				HexCell neighbor = current.GetNeighbor (d);
 				if (neighbor == null) {
@@ -202,8 +204,11 @@ public class HexGrid : MonoBehaviour {
 					continue;
 				}
 				int distance = current.Distance;
+				// int moveCost;
 				// TODO:
 				distance += neighbor.moveCost;
+
+				int turn = distance / speed;
 				//ef við erum ekki búnir að skoða þenna reit áður
 				if (neighbor.Distance == int.MaxValue) {
 					neighbor.Distance = distance;
