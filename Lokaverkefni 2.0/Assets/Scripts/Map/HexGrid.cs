@@ -16,6 +16,8 @@ public class HexGrid : MonoBehaviour {
 
 	PriorityQueue searchFrontier;
 
+	int searchFrontierPhase;
+
 	//Debug text UI ofan á reitina, vitum þannig hnitin á þeim
 	public Text coordinatesPrefab;
 	Canvas gridCanvas;
@@ -26,6 +28,9 @@ public class HexGrid : MonoBehaviour {
 
 	HexCell[] cells;
 	HexGridChunk[] chunks;
+
+	HexCell currentPathFrom, currentPathTo;
+	bool currentPathExists;
 
 
 	// public Color defaultColor = Color.white;
@@ -155,62 +160,84 @@ public class HexGrid : MonoBehaviour {
 	}
 
 	public void FindPath (HexCell fromCell, HexCell toCell, int speed) {
-		StopAllCoroutines ();
-		StartCoroutine (Search (fromCell, toCell, speed));
+		// nota thetta ef thu vilt sja algorithmanna 'i vinnslu
+		// StopAllCoroutines ();
+		// StartCoroutine (Search (fromCell, toCell, speed));
+		ClearPath();
+		currentPathFrom = fromCell;
+		currentPathTo = toCell;
+		currentPathExists = Search(fromCell, toCell, speed);
+		ShowPath(speed);
+
 	}
 		
 
-	IEnumerator Search (HexCell fromCell, HexCell toCell, int speed) {
+	bool Search (HexCell fromCell, HexCell toCell, int speed) {
+		searchFrontierPhase += 2;
 		if (searchFrontier == null) {
 			searchFrontier = new PriorityQueue ();
 		} else {
 			searchFrontier.Clear ();
 		}
-		for (int i = 0; i < cells.Length; i++) {
-			cells [i].Distance = int.MaxValue;
-			cells [i].DisableHighlight ();
-		}
+		//for (int i = 0; i < cells.Length; i++) {
+			// cells [i].Distance = int.MaxValue;
+		//	cells [i].SetLabel(null);
+		//	cells [i].DisableHighlight ();
+	//	}
 
 		fromCell.EnableHighlight (Color.white);
-		toCell.EnableHighlight (Color.red);
-		WaitForSeconds delay = new WaitForSeconds (1 / 60f);
-		// List<HexCell> frontier = new List<HexCell> ();
+		//toCell.EnableHighlight (Color.red);
+
+		// ef thu vilt sja algorithmann
+		//WaitForSeconds delay = new WaitForSeconds (1 / 60f);
+		fromCell.SearchPhase = searchFrontierPhase;
 		fromCell.Distance = 0;
 		searchFrontier.Enqueue (fromCell);
-		// frontier.Add (fromCell);
 
 		while (searchFrontier.Count > 0) {
-			yield return delay;
+			//ef thu vilt sja algortihmann
+			//yield return delay;
 			HexCell current = searchFrontier.Dequeue ();
-			// frontier.RemoveAt (0);
+
+			current.SearchPhase += 1;
 
 			if (current == toCell) {
-				current = current.PathFrom;
-				while (current != fromCell) {
-					current.EnableHighlight (Color.blue);
-					current = current.PathFrom;
-				}
-				break;
+				return true;
+				//current = current.PathFrom;
+				//while (current != fromCell) {
+				//	int turn = current.Distance / speed;
+				//	current.SetLabel(turn.ToString());
+			//		current.EnableHighlight (Color.blue);
+			//		current = current.PathFrom;
+			//	}
+			//	toCell.EnableHighlight (Color.red);
+			//	break;
 			}
 			int currentTurn = current.Distance / speed;
 
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
 				HexCell neighbor = current.GetNeighbor (d);
-				if (neighbor == null) {
+				if (neighbor == null ||
+					neighbor.SearchPhase > searchFrontierPhase) {
 					continue;
 				}
 
 				if (!neighbor.passable) {
 					continue;
 				}
-				int distance = current.Distance;
-				// int moveCost;
+				//int distance = current.Distance;
+				int moveCost = 0;
 				// TODO:
-				distance += neighbor.moveCost;
+				moveCost += neighbor.moveCost;
 
+				int distance = current.Distance + moveCost;
 				int turn = distance / speed;
+				if (turn > currentTurn) {
+					distance = turn * speed + moveCost;
+				}
 				//ef við erum ekki búnir að skoða þenna reit áður
-				if (neighbor.Distance == int.MaxValue) {
+				if (neighbor.SearchPhase < searchFrontierPhase) {
+					neighbor.SearchPhase = searchFrontierPhase;
 					neighbor.Distance = distance;
 					neighbor.PathFrom = current;
 					neighbor.searchHueristic = neighbor.coordinates.DistanceTo (toCell.coordinates);
@@ -227,6 +254,35 @@ public class HexGrid : MonoBehaviour {
 			
 			}
 		}
+		return false;
+	}
+
+	void ShowPath (int speed) {
+		if (currentPathExists) {
+			HexCell current = currentPathTo;
+			while (current != currentPathFrom) {
+				int turn = current.Distance / speed;
+				current.SetLabel(turn.ToString());
+				current.EnableHighlight(Color.white);
+				current = current.PathFrom;
+			}
+		}
+		currentPathFrom.EnableHighlight(Color.blue);
+		currentPathTo.EnableHighlight(Color.red);
+	}
+
+	void ClearPath () {
+		if (currentPathExists) {
+			HexCell current = currentPathTo;
+			while (current != currentPathFrom) {
+				current.SetLabel(null);
+				current.DisableHighlight();
+				current = current.PathFrom;
+			}
+			current.DisableHighlight();
+			currentPathExists = false;
+		}
+		currentPathFrom = currentPathTo = null;
 	}
 
 
