@@ -18,7 +18,7 @@ public class MapEditor : MonoBehaviour {
 	// TODO: athuga laga svo þetta sé ekki bara breytt í inspector
 	public bool editMode = true;
 
-	HexCell previousCell, searchFromCell, searchToCell;
+	HexCell previousCell;
 
 	void Awake () {
 		SelectColor(0);
@@ -46,42 +46,16 @@ public class MapEditor : MonoBehaviour {
 	}
 	//finna það sem er undir músinni
 	HexCell GetCellUnderCursor () {
-		Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-		RaycastHit hit;
-		if (Physics.Raycast(inputRay, out hit)) {
-			return hexGrid.GetCell(hit.point);
-		}
-		return null;
+		return
+			hexGrid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
 	}
 	// TODO: mögulega þarf að bæta við boolean upp á hvort sé að breyta um lit eða finna distance
 	void HandleInput () {
 		HexCell currentCell = GetCellUnderCursor();
 		if (currentCell) {
-			if (editMode) {
-				EditCell (currentCell);
-				//ATH
-			} else if(Input.GetKey(KeyCode.LeftShift) && searchToCell != currentCell){
-				if (searchFromCell != currentCell) {	
-					if (searchFromCell) {
-						searchFromCell.DisableHighlight ();
-					}
-					searchFromCell = currentCell;
-					searchFromCell.EnableHighlight (Color.white);
-					if (searchToCell) {
-						hexGrid.FindPath (searchFromCell, searchToCell, 24);
-					}
-				}
-			} else if(searchFromCell && searchFromCell != currentCell){
-				if (searchToCell != currentCell) {	
-					searchToCell = currentCell;
-					hexGrid.FindPath (searchFromCell, searchToCell, 24);
-				}
-			}else {
-				// sýnir allar en þarf ða lagfæra ef ég vill nota þetta aftur
-				// hexGrid.FindPath (currentCell);
-			}
-
-
+			//if(editMode){
+			EditCell (currentCell); 
+			//}
 			previousCell = currentCell;
 		}		else {
 			previousCell = null;
@@ -120,7 +94,6 @@ public class MapEditor : MonoBehaviour {
 	public void SetEditMode () {
 
 		editMode = !editMode;
-		print (editMode);
 
 	}
 

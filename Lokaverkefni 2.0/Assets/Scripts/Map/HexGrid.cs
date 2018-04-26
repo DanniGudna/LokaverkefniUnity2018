@@ -33,6 +33,13 @@ public class HexGrid : MonoBehaviour {
 	bool currentPathExists;
 
 
+	public bool HasPath {
+		get {
+			return currentPathExists;
+		}
+	}
+
+
 	// public Color defaultColor = Color.white;
 	// public Color touchedColor = Color.magenta;
 
@@ -114,7 +121,6 @@ public class HexGrid : MonoBehaviour {
 		//movemoentCost stilling
 		cell.moveCost = cell.level [cell.index];
 
-
 		//stillum nágranna
 		//þetta stillir að reiturinn til vinstri ( vestur W) sé nágranni, viljum ekki númer 0
 		//fallið okkar í hex direction mun still svon nágranna til austurs með þessu
@@ -169,6 +175,14 @@ public class HexGrid : MonoBehaviour {
 		currentPathExists = Search(fromCell, toCell, speed);
 		ShowPath(speed);
 
+	}
+
+	public HexCell GetCell (Ray ray) {
+		RaycastHit hit;
+		if (Physics.Raycast(ray, out hit)) {
+			return GetCell(hit.point);
+		}
+		return null;
 	}
 		
 
@@ -271,7 +285,7 @@ public class HexGrid : MonoBehaviour {
 		currentPathTo.EnableHighlight(Color.red);
 	}
 
-	void ClearPath () {
+	public void ClearPath () {
 		if (currentPathExists) {
 			HexCell current = currentPathTo;
 			while (current != currentPathFrom) {
@@ -284,6 +298,8 @@ public class HexGrid : MonoBehaviour {
 		}
 		currentPathFrom = currentPathTo = null;
 	}
+
+
 
 
 	/*
