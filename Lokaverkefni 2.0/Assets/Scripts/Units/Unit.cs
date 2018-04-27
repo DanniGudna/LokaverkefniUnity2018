@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour {
 
+	List<HexCell> pathToTravel;
+
 	public HexCell Location {
 		get {
 			return location;
@@ -37,6 +39,40 @@ public class Unit : MonoBehaviour {
 			return false;
 		}
 		return true;
+	}
+
+	public void Travel (List<HexCell> path) {
+		Location = path[path.Count - 1];
+		pathToTravel = path;
+		StopAllCoroutines();
+		StartCoroutine(TravelPath());
+	}
+		
+	// TODO: breyta
+	const float travelSpeed = 4f;
+
+	IEnumerator TravelPath () {
+
+		float t = Time.deltaTime * travelSpeed;;
+		for (int i = 1; i < pathToTravel.Count; i++) {
+			Vector3 a = pathToTravel[i - 1].Position;
+			Vector3 b = pathToTravel[i].Position;
+			for (; t < 1f; t += Time.deltaTime * travelSpeed) {
+				transform.localPosition = Vector3.Lerp(a, b, t);
+				yield return null;
+			}
+			t -= 1f;
+		}
+		transform.localPosition = location.Position;
+
+		ListPool<HexCell>.Add(pathToTravel);
+		pathToTravel = null;
+	}
+
+	void OnEnable () {
+		if (location) {
+			transform.localPosition = location.Position;
+		}
 	}
 
 

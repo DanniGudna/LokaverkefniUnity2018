@@ -11,6 +11,7 @@ public class GameUI : MonoBehaviour {
 
 	public void SetEditMode (bool toggle) {
 		enabled = !toggle;
+		grid.ShowUI(!toggle);
 		grid.ClearPath();
 		// editMode = !editMode;
 	}
@@ -45,7 +46,8 @@ public class GameUI : MonoBehaviour {
 
 	void DoMove () {
 		if (grid.HasPath) {
-			selectedUnit.Location = currentCell;
+			// selectedUnit.Location = currentCell;
+			selectedUnit.Travel(grid.GetPath());
 			grid.ClearPath();
 		}
 	}
