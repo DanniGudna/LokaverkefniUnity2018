@@ -20,9 +20,13 @@ public class HexCell : MonoBehaviour {
 
 	public int index;
 
+	public int turnsToReach;
+
 	public int SearchPhase { get; set; }
 
 	public Unit Unit { get; set; }
+
+	//public Vector3 serial;
 
 	//todo end
 

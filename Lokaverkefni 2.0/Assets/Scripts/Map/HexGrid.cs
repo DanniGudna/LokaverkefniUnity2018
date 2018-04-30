@@ -30,7 +30,7 @@ public class HexGrid : MonoBehaviour {
 	HexCell[] cells;
 	HexGridChunk[] chunks;
 
-	HexCell currentPathFrom, currentPathTo;
+	HexCell currentPathFrom, currentPathTo, movementRange;
 	bool currentPathExists;
 
 	List<Unit> units = new List<Unit>();
@@ -77,6 +77,10 @@ public class HexGrid : MonoBehaviour {
 		}
 	}
 
+	/**
+	 * Creates all the cells
+	 * the number of cells is defined by cellCountX and Z
+	 **/
 	void CreateCells () {
 		cells = new HexCell[cellCountZ * cellCountX];
 
@@ -89,14 +93,30 @@ public class HexGrid : MonoBehaviour {
 		
 
 	public HexCell GetCell (Vector3 position) {
+		//print (position);
 		position = transform.InverseTransformPoint(position);
+		//print (position);
 		Coordinates coordinates = Coordinates.FromPosition(position);
+		//print ("C" + coordinates);
 		int index =
 			coordinates.X + coordinates.Z * cellCountX + coordinates.Z / 2;
 		return cells[index];
 	}
 
+	public HexCell GetCellFromCoordinates (int x, int z) {
+		//int x = (int)coordinates.x;
+		//int y = (int)coordinates.y;
+		//int z = (int)coordinates.z;
+
+		//int index = x + z * cellCountX + z / 2;
+		//return cells[index];
+		print("hei");
+		print (cells [x + z * cellCountX]);
+		return cells[x + z * cellCountX];
+	}
+
 	public HexCell GetCell (Coordinates coordinates) {
+		print( "ping");
 		int z = coordinates.Z;
 		if (z < 0 || z >= cellCountZ) {
 			return null;
@@ -105,6 +125,7 @@ public class HexGrid : MonoBehaviour {
 		if (x < 0 || x >= cellCountX) {
 			return null;
 		}
+		print ("thisthis " + (x + z * cellCountX));
 		return cells[x + z * cellCountX];
 	}
 		
@@ -148,6 +169,11 @@ public class HexGrid : MonoBehaviour {
 		//stillum nafnið á nýja objectinu
 		cell.name= "x: " + x + " y: " + y +" z: " + z;
 
+		//stillum serial numer cells
+		//cell.serial.x = x;
+		//cell.serial.y = x;
+		//cell.serial.z = x;
+
 		Text label = Instantiate<Text>(coordinatesPrefab);
 		label.rectTransform.anchoredPosition =
 			new Vector2(position.x, position.z);
@@ -163,7 +189,11 @@ public class HexGrid : MonoBehaviour {
 		HexGridChunk chunk = chunks[chunkX + chunkZ * chunkCountX];
 
 		int localX = x - chunkX * HexMetrics.chunkSizeX;
+		//print (localX);
+
 		int localZ = z - chunkZ * HexMetrics.chunkSizeZ;
+		//print (localZ);
+		//Debug.Log ("index " + localX + localZ * HexMetrics.chunkSizeX);
 		chunk.AddCell(localX + localZ * HexMetrics.chunkSizeX, cell);
 	}
 
@@ -241,6 +271,7 @@ public class HexGrid : MonoBehaviour {
 				if (!neighbor.passable) {
 					continue;
 				}
+
 				//int distance = current.Distance;
 				int moveCost = 0;
 				// TODO:
@@ -281,6 +312,7 @@ public class HexGrid : MonoBehaviour {
 				current.SetLabel(turn.ToString());
 				current.EnableHighlight(Color.white);
 				current = current.PathFrom;
+				current.turnsToReach = turn;
 			}
 		}
 		currentPathFrom.EnableHighlight(Color.blue);
@@ -292,6 +324,8 @@ public class HexGrid : MonoBehaviour {
 			HexCell current = currentPathTo;
 			while (current != currentPathFrom) {
 				current.SetLabel(null);
+				//TODO: bretua i infinity
+				current.turnsToReach = 1000;
 				current.DisableHighlight();
 				current = current.PathFrom;
 			}
@@ -319,21 +353,5 @@ public class HexGrid : MonoBehaviour {
 		path.Reverse ();
 		return path;
 	}
-
-
-
-
-	/*
-	public void ColorCell (Vector3 position, Color color) {
-		position = transform.InverseTransformPoint(position);
-		Coordinates coordinates = Coordinates.FromPosition(position);
-		Debug.Log("touched at " + coordinates.ToString());
-		int index = coordinates.X + coordinates.Z * cellCountX + coordinates.Z / 2;
-		HexCell cell = cells[index];
-		cell.color = color;
-		//cell.color = touchedColor;
-		hexMesh.Triangulate(cells);
-	}
-	*/
 		
 }

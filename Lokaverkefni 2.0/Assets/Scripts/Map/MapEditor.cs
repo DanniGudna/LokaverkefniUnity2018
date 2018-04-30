@@ -15,6 +15,8 @@ public class MapEditor : MonoBehaviour {
 
 	public Unit unitPrefab;
 
+	public Archer testPrefab;
+
 	// TODO: athuga laga svo þetta sé ekki bara breytt í inspector
 	public bool editMode = true;
 
@@ -53,9 +55,9 @@ public class MapEditor : MonoBehaviour {
 	void HandleInput () {
 		HexCell currentCell = GetCellUnderCursor();
 		if (currentCell) {
-			//if(editMode){
+			if(editMode){
 			EditCell (currentCell); 
-			//}
+			}
 			previousCell = currentCell;
 		}		else {
 			previousCell = null;
@@ -76,7 +78,8 @@ public class MapEditor : MonoBehaviour {
 	void CreateUnit () {
 		HexCell cell = GetCellUnderCursor();
 		if (cell && !cell.Unit) {
-			Unit unit = Instantiate(unitPrefab);
+			//Unit unit = Instantiate(unitPrefab);
+			Archer unit = Instantiate(testPrefab);
 			unit.transform.SetParent(hexGrid.transform, false);
 			unit.Location = cell;
 

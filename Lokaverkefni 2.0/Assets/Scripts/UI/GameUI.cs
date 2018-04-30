@@ -8,6 +8,7 @@ public class GameUI : MonoBehaviour {
 	HexCell currentCell;
 
 	Unit selectedUnit;
+	Unit selectedUnitSpeed;
 
 	public void SetEditMode (bool toggle) {
 		enabled = !toggle;
@@ -27,17 +28,21 @@ public class GameUI : MonoBehaviour {
 	}
 
 	void DoSelection () {
+		
 		grid.ClearPath();
 		UpdateCurrentCell();
 		if (currentCell) {
 			selectedUnit = currentCell.Unit;
+			//print ("upps");
+			//selectedUnit.moveRange (selectedUnit.Speed, currentCell);
 		}
 	}
 
 	void DoPathfinding () {
 		if (UpdateCurrentCell()) {
 			if (currentCell && selectedUnit.IsValidDestination(currentCell)) {
-				grid.FindPath (selectedUnit.Location, currentCell, 24);
+				grid.FindPath (selectedUnit.Location, currentCell, selectedUnit.Speed);
+				//print ("this " + selectedUnit.Speed);
 			} else {
 				grid.ClearPath ();
 			}
@@ -49,6 +54,13 @@ public class GameUI : MonoBehaviour {
 			// selectedUnit.Location = currentCell;
 			selectedUnit.Travel(grid.GetPath());
 			grid.ClearPath();
+		}
+	}
+
+	void DoTurnMove (){
+		if (grid.HasPath) {
+			//currentPath 
+		
 		}
 	}
 
