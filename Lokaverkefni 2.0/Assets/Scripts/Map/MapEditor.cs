@@ -13,50 +13,51 @@ public class MapEditor : MonoBehaviour {
 
 	private int newIndex;
 
+	public Unit unitPrefab;
+
+	public Archer testPrefab;
+
 	// TODO: athuga laga svo þetta sé ekki bara breytt í inspector
 	public bool editMode = true;
 
-	HexCell previousCell, searchFromCell, searchToCell;
+	HexCell previousCell;
 
 	void Awake () {
 		SelectColor(0);
 	}
 
 	void Update () {
-		if (Input.GetMouseButton (0) && !EventSystem.current.IsPointerOverGameObject ()) {
-			HandleInput ();
-		} else {
-			previousCell = null;
+
+		if (!EventSystem.current.IsPointerOverGameObject()) {
+			if (Input.GetMouseButton(0)) {
+				HandleInput();
+				return;
+			}
+			if (Input.GetKeyDown(KeyCode.U)) {
+				
+				CreateUnit();
+				return;
+			}
+			if (Input.GetKeyDown(KeyCode.I)) {
+
+				DestroyUnit();
+				return;
+			}
 		}
+		previousCell = null;
+	}
+	//finna það sem er undir músinni
+	HexCell GetCellUnderCursor () {
+		return
+			hexGrid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
 	}
 	// TODO: mögulega þarf að bæta við boolean upp á hvort sé að breyta um lit eða finna distance
 	void HandleInput () {
-		Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-		RaycastHit hit;
-		if (Physics.Raycast(inputRay, out hit)) {
-			HexCell currentCell = hexGrid.GetCell (hit.point);
-
-			if (editMode) {
-				EditCell (currentCell);
-				//ATH
-			} else if(Input.GetKey(KeyCode.LeftShift) && searchToCell != currentCell){
-				if (searchFromCell) {
-					searchFromCell.DisableHighlight ();
-				}
-				searchFromCell = currentCell;
-				searchFromCell.EnableHighlight (Color.white);
-				if(searchToCell){
-					hexGrid.FindPath(searchFromCell, searchToCell, 24);
-				}
-			} else if(searchFromCell && searchFromCell != currentCell){
-				searchToCell = currentCell;
-				hexGrid.FindPath (searchFromCell, searchToCell, 24);
-			}else {
-				// sýnir allar en þarf ða lagfæra ef ég vill nota þetta aftur
-				// hexGrid.FindPath (currentCell);
+		HexCell currentCell = GetCellUnderCursor();
+		if (currentCell) {
+			if(editMode){
+			EditCell (currentCell); 
 			}
-
-
 			previousCell = currentCell;
 		}		else {
 			previousCell = null;
@@ -72,12 +73,30 @@ public class MapEditor : MonoBehaviour {
 	public void ChangeMoveCost (HexCell cell) {
 		cell.moveCost = cell.level[cell.index];
 	}
+
+	// búa til unit
+	void CreateUnit () {
+		HexCell cell = GetCellUnderCursor();
+		if (cell && !cell.Unit) {
+			//Unit unit = Instantiate(unitPrefab);
+			Archer unit = Instantiate(testPrefab);
+			unit.transform.SetParent(hexGrid.transform, false);
+			unit.Location = cell;
+
+		}
+	}
+
+	void DestroyUnit () {
+		HexCell cell = GetCellUnderCursor();
+		if (cell && cell.Unit) {
+			cell.Unit.Die();
+		}
+	}
 		
 
 	public void SetEditMode () {
 
 		editMode = !editMode;
-		print (editMode);
 
 	}
 

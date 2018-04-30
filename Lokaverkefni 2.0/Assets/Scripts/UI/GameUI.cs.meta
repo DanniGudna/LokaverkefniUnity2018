@@ -1,12 +1,10 @@
 fileFormatVersion: 2
-guid: e99df70a7550e5545aebd4308ac9d4d8
-timeCreated: 1524756851
+guid: bfa888e0306658747bbe47bcc94663c5
+timeCreated: 1524774363
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences:
-  - hexGrid: {instanceID: 0}
-  - unitPrefab: {instanceID: 0}
+  defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

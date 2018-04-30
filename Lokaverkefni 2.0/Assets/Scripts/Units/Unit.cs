@@ -1,0 +1,185 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Unit : MonoBehaviour {
+
+	List<HexCell> pathToTravel;
+
+	public HexGrid hexGrid;
+
+	// hraði hermanns 
+	protected int speed;
+
+	protected int health;
+
+	protected int damage;
+
+	protected int cooldown;
+
+	protected int range;
+
+	public int Speed {
+		get {
+			return speed;
+		}
+	}
+
+	public int Health{
+		get {
+			return health;
+		}
+	}
+
+	public int Damage {
+		get {
+			return damage;
+		}
+	}
+
+	public int Cooldown {
+		get {
+			return cooldown;
+		}
+	}
+
+	public int Range {
+		get {
+			return range;
+		}
+	}
+
+	public Unit(){
+		//default fyrir allt er 1
+		speed = 1;
+		health = 1;
+		damage = 1;
+		cooldown = 1;
+		range = 1;
+	}
+
+	public void setSpeed(int newSpeed){
+		speed = newSpeed;
+	}
+
+	void Awake () {
+		//this.gameObject.transform.GetChild(0);
+		//this.GetComponent<
+	}
+
+	//this.gameObject.transform.GetChild();
+	public HexCell Location {
+		get {
+			return location;
+		}
+		set {
+			if (location) {
+				location.Unit = null;
+			}
+			location = value;
+			value.Unit = this;
+			transform.localPosition = value.Position;
+		}
+	}
+
+	HexCell location;
+
+	public void ValidateLocation () {
+		transform.localPosition = location.Position;
+	}
+
+	// hreinsa objectið þegar það deyr
+	public void Die () {
+		location.Unit = null;
+		Destroy(gameObject);
+	}
+
+	public bool IsValidDestination (HexCell cell) {
+		// return !cell.IsUnderwater;
+		if ( cell.Unit || !cell.passable) {
+			return false;
+		}
+		return true;
+	}
+
+	public void Travel (List<HexCell> path) {
+		
+		int turnNodes = 0;
+		print ("length " + path.Count);
+		for (int i = 0; i < path.Count - 1; i++) {
+			print (path [i].turnsToReach);
+			if (path [i].turnsToReach == 0) {
+				turnNodes++;
+			}
+		}
+		print("TN " + turnNodes);
+		Location = path[turnNodes];
+		pathToTravel = path;
+		StopAllCoroutines();
+		StartCoroutine(TravelPath(turnNodes + 1));
+	}
+		
+	// TODO: breyta
+	const float travelSpeed = 4f;
+
+	IEnumerator TravelPath (int range) {
+
+		float t = Time.deltaTime * travelSpeed;;
+		//for (int i = 1; i < pathToTravel.Count; i++) {
+		for (int i = 1; i < range; i++) {
+			Vector3 a = pathToTravel[i - 1].Position;
+			Vector3 b = pathToTravel[i].Position;
+			for (; t < 1f; t += Time.deltaTime * travelSpeed) {
+				transform.localPosition = Vector3.Lerp(a, b, t);
+				yield return null;
+			}
+			t -= 1f;
+		}
+		//transform.localPosition = location.Position;
+
+		ListPool<HexCell>.Add(pathToTravel);
+		pathToTravel = null;
+	}
+
+	void OnEnable () {
+		if (location) {
+			transform.localPosition = location.Position;
+		}
+	}
+
+	public void moveRange(int sp, HexCell location){
+		print (location);
+		//List<HexCell> = Range;
+		int xStart = location.coordinates.X - sp;
+		if (xStart < 0) {
+			xStart = 0;
+		}
+		int xEnd = location.coordinates.X + sp;
+		//int yStart = Mathf.Max (-sp, (-location.coordinates.X - sp));
+		//int yEnd = Mathf.Min(sp, (-location.coordinates.X + sp));
+		for( int i = xStart; i <= xEnd; i++){
+			int yStart = Mathf.Max (-sp, (i - sp));
+			int yEnd = Mathf.Min(sp, (-i + sp));
+			for (int j= yStart; j <= yEnd; j++) {
+				int z = -i - j;
+				print ("x " + i + " y " + z + " z " + j);
+				//Coordinates position = new Coordinates(i,j);
+				//position (i, j);
+				//position.x = i;
+				//position.y = j;
+				//position.z = z;
+				//HexCell cellInRange;
+				HexCell cellInRange = hexGrid.GetCellFromCoordinates (i, j);
+
+				if (cellInRange != null) {
+					
+					cellInRange.Color = Color.green;
+					print (cellInRange.Color);
+				}
+			}
+		}
+	} 
+		
+
+
+}

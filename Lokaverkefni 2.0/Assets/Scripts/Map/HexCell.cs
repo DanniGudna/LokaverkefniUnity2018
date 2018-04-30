@@ -20,6 +20,14 @@ public class HexCell : MonoBehaviour {
 
 	public int index;
 
+	public int turnsToReach;
+
+	public int SearchPhase { get; set; }
+
+	public Unit Unit { get; set; }
+
+	//public Vector3 serial;
+
 	//todo end
 
 	//geymir upplysingar um pathið sem er tekið á milli tveggja cells
@@ -64,7 +72,7 @@ public class HexCell : MonoBehaviour {
 		}
 		set {
 			distance = value;
-			UpdateDistanceLabel();
+			//UpdateDistanceLabel();
 		}
 	}
 		
@@ -73,9 +81,20 @@ public class HexCell : MonoBehaviour {
 		return neighbors[(int)direction];
 	}
 
-	void UpdateDistanceLabel () {
+	/*void UpdateDistanceLabel () {
 		UnityEngine.UI.Text label = uiRect.GetComponent<UnityEngine.UI.Text>();
 		label.text = distance == int.MaxValue ? "" :distance.ToString ();
+	}  */
+
+	public void SetLabel (string text) {
+		UnityEngine.UI.Text label = uiRect.GetComponent<Text>();
+		label.text = text;
+	}
+
+	public Vector3 Position {
+		get {
+			return transform.localPosition;
+		}
 	}
 
 
