@@ -417,6 +417,7 @@ public class HexGrid : MonoBehaviour {
 			} else if (currentTurn == 0) {
 				//print ("a ad koma oft");
 				reachableTiles.Add (current);
+				current.EnableHighlight(Color.green);
 			}
 
 
@@ -462,11 +463,11 @@ public class HexGrid : MonoBehaviour {
 		return reachableTiles;
 	}
 
-
+	// TODO: færa inn í findReachable tiles
 	private void highlightReach( List<HexCell> tiles){
-		for (int i = 0; i < tiles.Count; i++) {
-			tiles[i].EnableHighlight(Color.green);
-		}
+		//for (int i = 0; i < tiles.Count; i++) {
+		//	tiles[i].EnableHighlight(Color.green);
+		//}
 	}
 
 	public void ClearReach () {

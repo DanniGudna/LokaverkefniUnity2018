@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Rider : Unit {
+public class Spearman : Unit {
 
-	public Rider(){
-		speed = 3;
+	public Spearman(){
+		speed = 2;
 		range = 1;
-		damage = 2;
-		health = 8;
+		damage = 3;
+		health = 10;
 		currentCooldown = 0;
-		cooldown = 2;
-	}
+		cooldown = 3;
 
+	}
 }

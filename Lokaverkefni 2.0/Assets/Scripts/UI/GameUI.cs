@@ -10,6 +10,28 @@ public class GameUI : MonoBehaviour {
 	Unit selectedUnit;
 	Unit selectedUnitSpeed;
 
+	// TODO: sameina
+	bool hasMoved = false;
+	bool hasAttacked = false;
+
+	protected int turn = 1;
+
+	/**
+	 * updates the next turn
+	 *  TODO: move to a gamemanager
+	 **/
+	public void updateTurn(){
+		turn++;
+		print (turn);
+		// kalla a newTurn
+	}
+
+	protected void newTurn(){
+		// TODO: breyta hvaða lið er að hreyfa sig
+		hasMoved = false;
+		hasAttacked = false;
+	}
+
 	public void SetEditMode (bool toggle) {
 		enabled = !toggle;
 		grid.ShowUI(!toggle);
@@ -17,6 +39,10 @@ public class GameUI : MonoBehaviour {
 		// editMode = !editMode;
 	}
 
+	/// <summary>
+	/// Updates the current cell.
+	/// </summary>
+	/// <returns><c>true</c>, if current cell was updated, <c>false</c> otherwise.</returns>
 	bool UpdateCurrentCell () {
 		HexCell cell =
 			grid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
@@ -27,6 +53,9 @@ public class GameUI : MonoBehaviour {
 		return false;
 	}
 
+	/// <summary>
+	/// Does the selection.
+	/// </summary>
 	void DoSelection () {
 		
 		grid.ClearPath();

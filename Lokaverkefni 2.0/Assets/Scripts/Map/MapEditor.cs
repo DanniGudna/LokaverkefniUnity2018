@@ -87,8 +87,8 @@ public class MapEditor : MonoBehaviour {
 		if (cell && !cell.Unit) {
 			//Unit unit = Instantiate(unitPrefab);
 			//Archer unit = Instantiate(testPrefab);
-
-			Unit unit = Instantiate(units[Random.Range(0, units.Length-1)]);
+			print(units.Length);
+			Unit unit = Instantiate(units[Random.Range(0, units.Length)]);
 			unit.transform.SetParent(hexGrid.transform, false);
 			unit.Location = cell;
 

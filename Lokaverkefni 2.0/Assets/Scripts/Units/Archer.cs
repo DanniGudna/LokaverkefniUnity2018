@@ -6,7 +6,7 @@ public class Archer : Unit {
 
 
 	public Archer(){
-		speed = 2;
+		speed = 1;
 		range = 3;
 		damage = 4;
 		health = 5;
