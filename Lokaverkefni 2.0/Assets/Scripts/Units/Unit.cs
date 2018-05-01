@@ -10,14 +10,18 @@ public class Unit : MonoBehaviour {
 
 	// hraði hermanns 
 	protected int speed;
-
+	//líf hermanns
 	protected int health;
-
+	// skaði hermanns
 	protected int damage;
-
+	// hversu langt þarf að líða millli hreyfinga
 	protected int cooldown;
-
+	// staðan á cooldowni á hermanni, þarf að vera minni en turn númer
+	protected int currentCooldown;
+	//lengd sem Unit nær að gera damage
 	protected int range;
+	//er hægt að hreyfa kallinn?
+	protected bool movable;
 
 	public int Speed {
 		get {
@@ -46,6 +50,12 @@ public class Unit : MonoBehaviour {
 	public int Range {
 		get {
 			return range;
+		}
+	}
+
+	public int CurrentColldown {
+		get {
+			return currentCooldown;
 		}
 	}
 
@@ -179,7 +189,11 @@ public class Unit : MonoBehaviour {
 			}
 		}
 	} 
-		
+
+
+	public void updateCooldown(Unit unit){
+		unit.currentCooldown += unit.cooldown;
+	}
 
 
 }

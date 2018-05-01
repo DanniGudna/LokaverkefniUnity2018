@@ -33,6 +33,7 @@ public class GameUI : MonoBehaviour {
 		UpdateCurrentCell();
 		if (currentCell) {
 			selectedUnit = currentCell.Unit;
+			//if(selectedUnit.Cooldown 
 			//print ("upps");
 			//selectedUnit.moveRange (selectedUnit.Speed, currentCell);
 		}
@@ -53,6 +54,8 @@ public class GameUI : MonoBehaviour {
 		if (grid.HasPath) {
 			// selectedUnit.Location = currentCell;
 			selectedUnit.Travel(grid.GetPath());
+			// uppfæra cooldown á kall sem var að hreyfast 
+			selectedUnit.updateCooldown (selectedUnit);
 			grid.ClearPath();
 		}
 	}

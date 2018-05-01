@@ -6,12 +6,14 @@ using System.IO;
 
 public class HexGrid : MonoBehaviour {
 
+	// mun fá gildi frá gameManager sem verða svo gildin, 10 er default value
 	//breidd borðsins
 	 int cellCountX = 10;
 	// public int width;
 	//hæð borðsins
 	int cellCountZ = 10;
-	//public int height;
+
+	public Material[] material;
 
 	public int chunkCountX = 2, chunkCountZ = 1;
 
@@ -34,6 +36,8 @@ public class HexGrid : MonoBehaviour {
 	bool currentPathExists;
 
 	List<Unit> units = new List<Unit>();
+
+	private MeshRenderer mesh;
 
 	public bool HasPath {
 		get {
@@ -143,6 +147,8 @@ public class HexGrid : MonoBehaviour {
 
 		//movemoentCost stilling
 		cell.moveCost = cell.level [cell.index];
+		mesh = cell.GetComponent<MeshRenderer> ();
+		mesh.materials [0] = material [0];
 
 		//stillum nágranna
 		//þetta stillir að reiturinn til vinstri ( vestur W) sé nágranni, viljum ekki númer 0
