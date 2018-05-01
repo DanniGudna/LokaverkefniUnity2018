@@ -19,6 +19,8 @@ public class MapEditor : MonoBehaviour {
 
 	public Archer testPrefab;
 
+	public Unit[] units;
+
 	//TODO: ekki hafa h'er heldur 'i gameManager
 	protected int turn = 1;
 
@@ -84,7 +86,9 @@ public class MapEditor : MonoBehaviour {
 		HexCell cell = GetCellUnderCursor();
 		if (cell && !cell.Unit) {
 			//Unit unit = Instantiate(unitPrefab);
-			Archer unit = Instantiate(testPrefab);
+			//Archer unit = Instantiate(testPrefab);
+
+			Unit unit = Instantiate(units[Random.Range(0, units.Length-1)]);
 			unit.transform.SetParent(hexGrid.transform, false);
 			unit.Location = cell;
 
