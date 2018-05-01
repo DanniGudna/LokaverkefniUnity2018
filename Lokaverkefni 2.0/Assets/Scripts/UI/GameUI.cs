@@ -33,6 +33,9 @@ public class GameUI : MonoBehaviour {
 		UpdateCurrentCell();
 		if (currentCell) {
 			selectedUnit = currentCell.Unit;
+			if (selectedUnit) {
+				grid.FindReachableTiles (currentCell, selectedUnit.Speed);
+			}
 			//if(selectedUnit.Cooldown 
 			//print ("upps");
 			//selectedUnit.moveRange (selectedUnit.Speed, currentCell);

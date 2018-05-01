@@ -175,11 +175,6 @@ public class HexGrid : MonoBehaviour {
 		//stillum nafnið á nýja objectinu
 		cell.name= "x: " + x + " y: " + y +" z: " + z;
 
-		//stillum serial numer cells
-		//cell.serial.x = x;
-		//cell.serial.y = x;
-		//cell.serial.z = x;
-
 		Text label = Instantiate<Text>(coordinatesPrefab);
 		label.rectTransform.anchoredPosition =
 			new Vector2(position.x, position.z);
@@ -195,11 +190,7 @@ public class HexGrid : MonoBehaviour {
 		HexGridChunk chunk = chunks[chunkX + chunkZ * chunkCountX];
 
 		int localX = x - chunkX * HexMetrics.chunkSizeX;
-		//print (localX);
-
 		int localZ = z - chunkZ * HexMetrics.chunkSizeZ;
-		//print (localZ);
-		//Debug.Log ("index " + localX + localZ * HexMetrics.chunkSizeX);
 		chunk.AddCell(localX + localZ * HexMetrics.chunkSizeX, cell);
 	}
 
@@ -211,7 +202,23 @@ public class HexGrid : MonoBehaviour {
 		currentPathFrom = fromCell;
 		currentPathTo = toCell;
 		currentPathExists = Search(fromCell, toCell, speed);
-		ShowPath(speed);
+		//ShowPath(speed);
+
+	}
+
+	/// <summary>
+	///  Finds all the tiles a unit can reach and shows them
+	/// </summary>
+	/// uses reachableTiles to find the tiles and highlightReach to higlight
+	/// <param name="fromCell">From cell.</param>
+	/// <param name="speed">Speed.</param>
+	public void FindReachableTiles (HexCell fromCell, int speed) {
+
+		ClearPath();
+		print ("hallo");
+		List<HexCell> tiles= reachableTiles (fromCell, speed);
+		print ("this" + tiles);
+		highlightReach (tiles);
 
 	}
 
@@ -267,6 +274,7 @@ public class HexGrid : MonoBehaviour {
 			}
 			int currentTurn = (current.Distance - 1) / speed;
 
+
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
 				HexCell neighbor = current.GetNeighbor (d);
 				if (neighbor == null ||
@@ -285,6 +293,7 @@ public class HexGrid : MonoBehaviour {
 
 				int distance = current.Distance + moveCost;
 				int turn = ( distance - 1 ) / speed;
+				//eydir movementi sem kall a eftir ef hann er ekki med nog til ad fara a naesta reit
 				if (turn > currentTurn) {
 					distance = turn * speed + moveCost;
 				}
@@ -359,5 +368,92 @@ public class HexGrid : MonoBehaviour {
 		path.Reverse ();
 		return path;
 	}
-		
+
+	///<summary> <c>reachableTiles</c> Finnur alla reiti sem ákveðinn kall getur náð
+	/// </summary>
+	/// <returns> A list of HexCell that can be reached from a HexCell with the current speed</returns>
+	/// <param name="fromcell">fromCell</param>
+	/// <para name "speed"> speed</para>
+	public List<HexCell> reachableTiles ( HexCell fromCell, int speed){
+		List<HexCell> reachableTiles = new List<HexCell>();
+		searchFrontierPhase += 2;
+		if (searchFrontier == null) {
+			searchFrontier = new PriorityQueue ();
+		} else {
+			searchFrontier.Clear ();
+		}
+
+		fromCell.EnableHighlight (Color.white);
+
+		fromCell.SearchPhase = searchFrontierPhase;
+		fromCell.Distance = 0;
+		searchFrontier.Enqueue (fromCell);
+
+		while (searchFrontier.Count > 0) {
+
+			HexCell current = searchFrontier.Dequeue ();
+
+			current.SearchPhase += 1;
+
+	
+			int currentTurn = (current.Distance - 1) / speed;
+
+			if (currentTurn > 0) {
+				//print ("breakPoint");
+				//print (currentTurn);
+				break;
+			} else if (currentTurn == 0) {
+				//print ("a ad koma oft");
+				reachableTiles.Add (current);
+			}
+
+
+			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
+				HexCell neighbor = current.GetNeighbor (d);
+				if (neighbor == null ||
+					neighbor.SearchPhase > searchFrontierPhase) {
+					continue;
+				}
+
+				if (!neighbor.passable) {
+					continue;
+				}
+
+				//int distance = current.Distance;
+				int moveCost = 0;
+				// TODO:
+				moveCost += neighbor.moveCost;
+
+				int distance = current.Distance + moveCost;
+				int turn = ( distance - 1 ) / speed;
+				//eydir movementi sem kall a eftir ef hann er ekki med nog til ad fara a naesta reit
+				if (turn > currentTurn) {
+					distance = turn * speed + moveCost;
+				}
+				//ef við erum ekki búnir að skoða þenna reit áður
+				if (neighbor.SearchPhase < searchFrontierPhase) {
+					neighbor.SearchPhase = searchFrontierPhase;
+					neighbor.Distance = distance;
+					neighbor.PathFrom = current;
+					//neighbor.searchHueristic = neighbor.coordinates.DistanceTo (toCell.coordinates);
+					//frontier.Add (neighbor);
+					searchFrontier.Enqueue (neighbor);
+				} else if (distance < neighbor.Distance) {
+					int oldPriority = neighbor.SearchPriority;
+					neighbor.Distance = distance;
+					neighbor.PathFrom = current;
+					searchFrontier.Change (neighbor, oldPriority);
+				}
+
+			}
+		}
+		return reachableTiles;
+	}
+
+
+	private void highlightReach( List<HexCell> tiles){
+		for (int i = 0; i < tiles.Count; i++) {
+			tiles[i].EnableHighlight(Color.green);
+		}
+	}
 }
