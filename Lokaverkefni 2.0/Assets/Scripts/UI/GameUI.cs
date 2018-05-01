@@ -30,6 +30,7 @@ public class GameUI : MonoBehaviour {
 	void DoSelection () {
 		
 		grid.ClearPath();
+		grid.ClearReach ();
 		UpdateCurrentCell();
 		if (currentCell) {
 			selectedUnit = currentCell.Unit;
@@ -48,18 +49,23 @@ public class GameUI : MonoBehaviour {
 				grid.FindPath (selectedUnit.Location, currentCell, selectedUnit.Speed);
 				//print ("this " + selectedUnit.Speed);
 			} else {
-				grid.ClearPath ();
+				//grid.ClearPath ();
 			}
 		}
 	}
 
+	/// <summary>
+	/// Does the move.
+	/// </summary>
 	void DoMove () {
 		if (grid.HasPath) {
 			// selectedUnit.Location = currentCell;
 			selectedUnit.Travel(grid.GetPath());
 			// uppfæra cooldown á kall sem var að hreyfast 
-			selectedUnit.updateCooldown (selectedUnit);
+			selectedUnit.updateCooldown (selectedUnit);  
+			grid.ClearReach ();
 			grid.ClearPath();
+			selectedUnit = null;
 		}
 	}
 

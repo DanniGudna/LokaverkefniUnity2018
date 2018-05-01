@@ -32,6 +32,8 @@ public class HexGrid : MonoBehaviour {
 	HexCell[] cells;
 	HexGridChunk[] chunks;
 
+	List<HexCell> tilesInRange;
+
 	HexCell currentPathFrom, currentPathTo, movementRange;
 	bool currentPathExists;
 
@@ -53,6 +55,12 @@ public class HexGrid : MonoBehaviour {
 		CreateMap(cellCountX, cellCountZ);
 	}
 
+	/// <summary>
+	/// Creates the map.
+	/// </summary>
+	/// <returns><c>true</c>, if map was created, <c>false</c> otherwise.</returns>
+	/// <param name="x">The x coordinate.</param>
+	/// <param name="z">The z coordinate.</param>
 	public bool CreateMap (int x, int z) {
 
 		if (chunks != null) {
@@ -70,6 +78,9 @@ public class HexGrid : MonoBehaviour {
 		return true;
 	}
 
+	/// <summary>
+	/// Creates the chunks.
+	/// </summary>
 	void CreateChunks () {
 		chunks = new HexGridChunk[chunkCountX * chunkCountZ];
 
@@ -107,20 +118,24 @@ public class HexGrid : MonoBehaviour {
 		return cells[index];
 	}
 
+	/// <summary>
+	/// Gets the cell from coordinates.
+	/// </summary>
+	/// <returns>The cell from coordinates.</returns>
+	/// <param name="x">The x coordinate.</param>
+	/// <param name="z">The z coordinate.</param>
 	public HexCell GetCellFromCoordinates (int x, int z) {
-		//int x = (int)coordinates.x;
-		//int y = (int)coordinates.y;
-		//int z = (int)coordinates.z;
-
-		//int index = x + z * cellCountX + z / 2;
-		//return cells[index];
-		print("hei");
 		print (cells [x + z * cellCountX]);
 		return cells[x + z * cellCountX];
 	}
 
+
+	/// <summary>
+	/// Gets the cell.
+	/// </summary>
+	/// <returns>The cell.</returns>
+	/// <param name="coordinates">Coordinates.</param>
 	public HexCell GetCell (Coordinates coordinates) {
-		print( "ping");
 		int z = coordinates.Z;
 		if (z < 0 || z >= cellCountZ) {
 			return null;
@@ -129,7 +144,6 @@ public class HexGrid : MonoBehaviour {
 		if (x < 0 || x >= cellCountX) {
 			return null;
 		}
-		print ("thisthis " + (x + z * cellCountX));
 		return cells[x + z * cellCountX];
 	}
 		
@@ -198,11 +212,11 @@ public class HexGrid : MonoBehaviour {
 		// nota thetta ef thu vilt sja algorithmanna 'i vinnslu
 		// StopAllCoroutines ();
 		// StartCoroutine (Search (fromCell, toCell, speed));
-		ClearPath();
+		//ClearPath();
 		currentPathFrom = fromCell;
 		currentPathTo = toCell;
 		currentPathExists = Search(fromCell, toCell, speed);
-		//ShowPath(speed);
+		ShowPath(speed);
 
 	}
 
@@ -214,11 +228,9 @@ public class HexGrid : MonoBehaviour {
 	/// <param name="speed">Speed.</param>
 	public void FindReachableTiles (HexCell fromCell, int speed) {
 
-		ClearPath();
-		print ("hallo");
-		List<HexCell> tiles= reachableTiles (fromCell, speed);
-		print ("this" + tiles);
-		highlightReach (tiles);
+		ClearReach();
+		tilesInRange = reachableTiles (fromCell, speed);
+		highlightReach (tilesInRange);
 
 	}
 
@@ -324,14 +336,14 @@ public class HexGrid : MonoBehaviour {
 			HexCell current = currentPathTo;
 			while (current != currentPathFrom) {
 				int turn = (current.Distance-1) / speed;
-				current.SetLabel(turn.ToString());
-				current.EnableHighlight(Color.white);
+				//current.SetLabel(turn.ToString());
+				//current.EnableHighlight(Color.white);
 				current = current.PathFrom;
 				current.turnsToReach = turn;
 			}
 		}
 		currentPathFrom.EnableHighlight(Color.blue);
-		currentPathTo.EnableHighlight(Color.red);
+		//currentPathTo.EnableHighlight(Color.red);
 	}
 
 	public void ClearPath () {
@@ -358,6 +370,7 @@ public class HexGrid : MonoBehaviour {
 
 	public List<HexCell> GetPath () {
 		if (!currentPathExists) {
+			print ("ekki til");
 			return null;
 		}
 		List<HexCell> path = ListPool<HexCell>.Get();
@@ -397,11 +410,10 @@ public class HexGrid : MonoBehaviour {
 
 	
 			int currentTurn = (current.Distance - 1) / speed;
-
 			if (currentTurn > 0) {
 				//print ("breakPoint");
 				//print (currentTurn);
-				break;
+				continue;
 			} else if (currentTurn == 0) {
 				//print ("a ad koma oft");
 				reachableTiles.Add (current);
@@ -455,5 +467,25 @@ public class HexGrid : MonoBehaviour {
 		for (int i = 0; i < tiles.Count; i++) {
 			tiles[i].EnableHighlight(Color.green);
 		}
+	}
+
+	public void ClearReach () {
+		if (tilesInRange != null) {
+			print ("clearing");
+			for (int i = 0; i < tilesInRange.Count; i++) {
+				HexCell current = tilesInRange [i];
+				current.SetLabel (null);
+				//TODO: bretua i infinity
+				//current.turnsToReach = 1000;
+				current.DisableHighlight ();
+				//current = current.PathFrom;
+				current.DisableHighlight ();
+			}
+
+			tilesInRange = null;
+		}
+
+			//currentPathExists = false;
+		//currentPathFrom = currentPathTo = null;
 	}
 }

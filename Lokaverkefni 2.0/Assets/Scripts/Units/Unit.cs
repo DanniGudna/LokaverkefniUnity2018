@@ -77,7 +77,10 @@ public class Unit : MonoBehaviour {
 		//this.GetComponent<
 	}
 
-	//this.gameObject.transform.GetChild();
+	/// <summary>
+	/// Gets or sets the location.
+	/// </summary>
+	/// <value>The location.</value>
 	public HexCell Location {
 		get {
 			return location;
@@ -99,11 +102,16 @@ public class Unit : MonoBehaviour {
 	}
 
 	// hreinsa objectið þegar það deyr
+
 	public void Die () {
 		location.Unit = null;
 		Destroy(gameObject);
 	}
-
+	/// <summary>
+	/// Determines whether this instance is valid destination to the specified cell.
+	/// </summary>
+	/// <returns><c>true</c> if this instance is valid destination to the specified cell; otherwise, <c>false</c>.</returns>
+	/// <param name="cell">Cell.</param>
 	public bool IsValidDestination (HexCell cell) {
 		// return !cell.IsUnderwater;
 		if ( cell.Unit || !cell.passable) {
@@ -111,18 +119,21 @@ public class Unit : MonoBehaviour {
 		}
 		return true;
 	}
-
+	/// <summary>
+	/// Travel the specified path.
+	/// </summary>
+	/// <param name="path">Path.</param>
 	public void Travel (List<HexCell> path) {
 		
 		int turnNodes = 0;
-		print ("length " + path.Count);
+		//print ("length " + path.Count);
 		for (int i = 0; i < path.Count - 1; i++) {
-			print (path [i].turnsToReach);
+			//print (path [i].turnsToReach);
 			if (path [i].turnsToReach == 0) {
 				turnNodes++;
 			}
 		}
-		print("TN " + turnNodes);
+		//print("TN " + turnNodes);
 		Location = path[turnNodes];
 		pathToTravel = path;
 		StopAllCoroutines();
@@ -132,6 +143,11 @@ public class Unit : MonoBehaviour {
 	// TODO: breyta
 	const float travelSpeed = 4f;
 
+	/// <summary>
+	/// Travels the path.
+	/// </summary>
+	/// <returns>The path.</returns>
+	/// <param name="range">Range.</param>
 	IEnumerator TravelPath (int range) {
 
 		float t = Time.deltaTime * travelSpeed;;
