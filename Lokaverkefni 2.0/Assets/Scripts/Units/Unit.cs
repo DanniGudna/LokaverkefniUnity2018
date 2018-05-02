@@ -124,7 +124,6 @@ public class Unit : MonoBehaviour {
 	/// </summary>
 	/// <param name="path">Path.</param>
 	public void Travel (List<HexCell> path) {
-		
 		int turnNodes = 0;
 		for (int i = 0; i < path.Count - 1; i++) {
 			if (path [i].turnsToReach == 0) {

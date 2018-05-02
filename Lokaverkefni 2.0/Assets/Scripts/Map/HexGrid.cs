@@ -121,6 +121,12 @@ public class HexGrid : MonoBehaviour {
 			}
 		}
 	}
+
+	public void FindDistancesTo (HexCell cell){
+		for (int i = 0; i < cells.Length; i++) {
+			cells[i].Distance = cell.coordinates.DistanceTo(cells[i].coordinates);
+		}
+	}
 		
 
 	/// <summary>
@@ -234,7 +240,7 @@ public class HexGrid : MonoBehaviour {
 		// nota thetta ef thu vilt sja algorithmanna 'i vinnslu
 		// StopAllCoroutines ();
 		// StartCoroutine (Search (fromCell, toCell, speed));
-		//ClearPath();
+		ClearPath();
 		currentPathFrom = fromCell;
 		currentPathTo = toCell;
 		currentPathExists = Search(fromCell, toCell, speed);
@@ -258,8 +264,8 @@ public class HexGrid : MonoBehaviour {
 
 	public void FindAttackableTiles(HexCell fromCell, int range){
 
-		ClearAttackable ();
-		unitsInRange = reachableTiles (fromCell, range);
+		//ClearAttackable ();
+		unitsInRange = attackableTiles (fromCell, range);
 		HighlightInRange ();
 
 	}
@@ -431,7 +437,7 @@ public class HexGrid : MonoBehaviour {
 			searchFrontier.Clear ();
 		}
 
-		fromCell.EnableHighlight (Color.white);
+		//fromCell.EnableHighlight (Color.white);
 
 		fromCell.SearchPhase = searchFrontierPhase;
 		fromCell.Distance = 0;
@@ -443,7 +449,6 @@ public class HexGrid : MonoBehaviour {
 
 			current.SearchPhase += 1;
 
-	
 			int currentTurn = (current.Distance - 1) / speed;
 			if (currentTurn > 0) {
 				continue;
@@ -451,7 +456,6 @@ public class HexGrid : MonoBehaviour {
 				reachableTiles.Add (current);
 				//current.EnableHighlight(Color.green);
 			}
-
 
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
 				HexCell neighbor = current.GetNeighbor (d);
@@ -494,6 +498,27 @@ public class HexGrid : MonoBehaviour {
 		}
 		return reachableTiles;
 	}
+
+	public List<HexCell> attackableTiles ( HexCell fromCell, int range){
+		List<HexCell> attackableTiles = new List<HexCell>();
+		//TODO: gera hagkvaemara!!!
+		for (int i = 0; i < cells.Length; i++) {
+			cells[i].Distance = fromCell.coordinates.DistanceTo(cells[i].coordinates);
+			cells[i].SetLabel(cells[i].Distance.ToString());
+			print (cells [i].Distance);
+			//if (cells[i].Distance > range){
+			//	print ("ping");
+			//	break;
+			//}
+			if (cells[i].Distance <= range){
+				attackableTiles.Add (cells [i]);
+			}
+			//attackableTiles.Add (cells [i]);
+
+		}
+		return attackableTiles;
+	}
+
 		
 	public void HighlightReach( ){
 		if (tilesInRange != null) {

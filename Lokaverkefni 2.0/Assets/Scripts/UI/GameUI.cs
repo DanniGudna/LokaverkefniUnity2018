@@ -73,13 +73,13 @@ public class GameUI : MonoBehaviour {
 			//selectedUnit.moveRange (selectedUnit.Speed, currentCell);
 		} else{
 			//deselectum unitinn
-			selectedUnit = null;
-			//currentCell = null;
+			currentCell = null;
 		}
 	}
 
 	void DoPathfinding () {
 		grid.HighlightReach();
+		Debug.Break ();
 		if (UpdateCurrentCell()) {
 			if (currentCell && selectedUnit.IsValidDestination(currentCell)) {
 				grid.FindPath (selectedUnit.Location, currentCell, selectedUnit.Speed);
@@ -101,7 +101,8 @@ public class GameUI : MonoBehaviour {
 			// selectedUnit.Location = currentCell;
 			selectedUnit.Travel(grid.GetPath());
 			// uppfæra cooldown á kall sem var að hreyfast 
-			selectedUnit.updateCooldown (selectedUnit);  
+			selectedUnit.updateCooldown (selectedUnit);
+
 			grid.ClearReach ();
 			grid.ClearPath();
 			grid.ClearAttackable ();
@@ -126,13 +127,16 @@ public class GameUI : MonoBehaviour {
 					// TODO: hvad ef kall vill ekki hrefa sig?
 					if (!attacking) {
 						if (grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition)) == grid.CurrentPathTo) {
+							
 							DoMove ();
+
 							// TODO: finna hvaða kallar eru in range
 
 							//hasMoved = true;
 						// ef aftur er ytt a sama reit tha hreyfa kallinn
 						} else {
 							DoPathfinding ();
+							//grid.FindAttackableTiles (grid.CurrentPathTo, selectedUnit.Range);
 						}
 					} else {
 				//	DoPathfinding ();

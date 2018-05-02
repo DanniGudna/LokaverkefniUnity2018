@@ -27,6 +27,8 @@ public class HexGridChunk : MonoBehaviour {
 		cell.chunk = this;
 		cell.transform.SetParent(transform, false);
 		cell.uiRect.SetParent(gridCanvas.transform, false);
+		cell.SetLabel(cell.coordinates.ToString
+			());
 	}
 
 	public void Refresh () {
