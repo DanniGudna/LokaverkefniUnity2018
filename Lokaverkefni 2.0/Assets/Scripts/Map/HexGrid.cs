@@ -287,18 +287,13 @@ public class HexGrid : MonoBehaviour {
 
 			if (current == toCell) {
 				return true;
-				//current = current.PathFrom;
-				//while (current != fromCell) {
-				//	int turn = current.Distance / speed;
-				//	current.SetLabel(turn.ToString());
-			//		current.EnableHighlight (Color.blue);
-			//		current = current.PathFrom;
-			//	}
-			//	toCell.EnableHighlight (Color.red);
-			//	break;
 			}
 			int currentTurn = (current.Distance - 1) / speed;
 
+			//ef við erum komin yfir það sem við náum á einni umfeðr þá hættum við leit
+			if((current.Distance/speed) > 0){
+				break;
+			}
 
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
 				HexCell neighbor = current.GetNeighbor (d);
@@ -318,6 +313,7 @@ public class HexGrid : MonoBehaviour {
 
 				int distance = current.Distance + moveCost;
 				int turn = ( distance - 1 ) / speed;
+
 				//eydir movementi sem kall a eftir ef hann er ekki med nog til ad fara a naesta reit
 				if (turn > currentTurn) {
 					distance = turn * speed + moveCost;

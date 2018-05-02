@@ -116,13 +116,14 @@ public class GameUI : MonoBehaviour {
 					// Ef kall er ekki buinn ad hreyfa sig getur hann ekki gert aras
 					// TODO: hvad ef kall vill ekki hrefa sig?
 					if (!attacking) {
-						if (!hasMoved) {
-							DoPathfinding ();
-							hasMoved = true;
-						// ef aftur er ytt a sama reit tha hreyfa kallinn
-						} else if (grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition)) == grid.CurrentPathTo) {
+						if (grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition)) == grid.CurrentPathTo) {
 							DoMove ();
 							// TODO: finna hvaða kallar eru in range
+
+							//hasMoved = true;
+						// ef aftur er ytt a sama reit tha hreyfa kallinn
+						} else {
+							DoPathfinding ();
 						}
 					} else {
 				//	DoPathfinding ();

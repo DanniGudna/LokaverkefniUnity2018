@@ -114,6 +114,7 @@ public class Unit : MonoBehaviour {
 	/// <param name="cell">Cell.</param>
 	public bool IsValidDestination (HexCell cell) {
 		// return !cell.IsUnderwater;
+		print(cell.turnsToReach);
 		if ( cell.Unit || !cell.passable) {
 			return false;
 		}
