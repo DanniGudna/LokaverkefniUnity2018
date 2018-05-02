@@ -505,9 +505,7 @@ public class HexGrid : MonoBehaviour {
 		for (int i = 0; i < cells.Length; i++) {
 			cells[i].Distance = fromCell.coordinates.DistanceTo(cells[i].coordinates);
 			cells[i].SetLabel(cells[i].Distance.ToString());
-			print (cells [i].Distance);
 			//if (cells[i].Distance > range){
-			//	print ("ping");
 			//	break;
 			//}
 			if (cells[i].Distance <= range){
@@ -532,6 +530,7 @@ public class HexGrid : MonoBehaviour {
 		for (int i = 0; i < unitsInRange.Count; i++) {
 			if (unitsInRange [i].Unit != null) {
 				unitsInRange [i].EnableHighlight (Color.red);
+				unitsInRange [i].attackable = true;
 			}
 		}
 	}
@@ -556,6 +555,7 @@ public class HexGrid : MonoBehaviour {
 			for (int i = 0; i < unitsInRange.Count; i++) {
 				HexCell current = unitsInRange [i];
 				current.SetLabel (null);
+				current.attackable = false;
 				current.DisableHighlight ();
 			}
 

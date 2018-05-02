@@ -33,6 +33,10 @@ public class Unit : MonoBehaviour {
 		get {
 			return health;
 		}
+
+		set{ 
+			health = health - value;
+		}
 	}
 
 	public int Damage {
@@ -198,6 +202,12 @@ public class Unit : MonoBehaviour {
 
 	public void updateCooldown(Unit unit){
 		unit.currentCooldown += unit.cooldown;
+	}
+
+	public void takeDamage(int damage){
+		print ("hp " + this.health);
+		this.Health = damage;
+		print ("hp after " + this.health);
 	}
 
 

@@ -5,7 +5,7 @@ using UnityEngine;
 public class Rider : Unit {
 
 	public Rider(){
-		speed = 2; //3
+		speed = 3; //3
 		range = 1;
 		damage = 2;
 		health = 8;
