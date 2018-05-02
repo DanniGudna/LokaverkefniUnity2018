@@ -54,7 +54,7 @@ public class MapEditor : MonoBehaviour {
 		previousCell = null;
 	}
 	//finna það sem er undir músinni
-	HexCell GetCellUnderCursor () {
+	public HexCell GetCellUnderCursor () {
 		return
 			hexGrid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
 	}

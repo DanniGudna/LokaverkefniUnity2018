@@ -33,8 +33,14 @@ public class HexGrid : MonoBehaviour {
 	HexGridChunk[] chunks;
 
 	List<HexCell> tilesInRange;
+	List<HexCell> unitsInRange;
 
 	HexCell currentPathFrom, currentPathTo, movementRange;
+	public HexCell CurrentPathTo {
+		get{
+			return currentPathTo;
+		}
+	}
 	bool currentPathExists;
 
 	List<Unit> units = new List<Unit>();
@@ -107,12 +113,14 @@ public class HexGrid : MonoBehaviour {
 	}
 		
 
+	/// <summary>
+	/// Gets the cell.
+	/// </summary>
+	/// <returns>The cell.</returns>
+	/// <param name="position">Position.</param>
 	public HexCell GetCell (Vector3 position) {
-		//print (position);
 		position = transform.InverseTransformPoint(position);
-		//print (position);
 		Coordinates coordinates = Coordinates.FromPosition(position);
-		//print ("C" + coordinates);
 		int index =
 			coordinates.X + coordinates.Z * cellCountX + coordinates.Z / 2;
 		return cells[index];
@@ -147,7 +155,12 @@ public class HexGrid : MonoBehaviour {
 		return cells[x + z * cellCountX];
 	}
 		
-
+	/// <summary>
+	/// Creates the cell.
+	/// </summary>
+	/// <param name="x">The x coordinate.</param>
+	/// <param name="z">The z coordinate.</param>
+	/// <param name="i">The index.</param>
 	void CreateCell (int x, int z, int i) {
 		Vector3 position;
 		position.x = (x + z * 0.5f - z / 2) * (HexMetrics.innerRadius * 2f);
@@ -336,8 +349,8 @@ public class HexGrid : MonoBehaviour {
 			HexCell current = currentPathTo;
 			while (current != currentPathFrom) {
 				int turn = (current.Distance-1) / speed;
-				//current.SetLabel(turn.ToString());
-				//current.EnableHighlight(Color.white);
+				current.SetLabel(turn.ToString());
+				current.EnableHighlight(Color.white);
 				current = current.PathFrom;
 				current.turnsToReach = turn;
 			}
