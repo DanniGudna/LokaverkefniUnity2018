@@ -7,6 +7,8 @@ public class MapEditor : MonoBehaviour {
 
 	public Color[] colors;
 
+	public Material[] material;
+
 	public HexGrid hexGrid;
 
 	private Color activeColor;
@@ -16,6 +18,11 @@ public class MapEditor : MonoBehaviour {
 	public Unit unitPrefab;
 
 	public Archer testPrefab;
+
+	public Unit[] units;
+
+	//TODO: ekki hafa h'er heldur 'i gameManager
+	protected int turn = 1;
 
 	// TODO: athuga laga svo þetta sé ekki bara breytt í inspector
 	public bool editMode = true;
@@ -47,7 +54,7 @@ public class MapEditor : MonoBehaviour {
 		previousCell = null;
 	}
 	//finna það sem er undir músinni
-	HexCell GetCellUnderCursor () {
+	public HexCell GetCellUnderCursor () {
 		return
 			hexGrid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
 	}
@@ -79,7 +86,9 @@ public class MapEditor : MonoBehaviour {
 		HexCell cell = GetCellUnderCursor();
 		if (cell && !cell.Unit) {
 			//Unit unit = Instantiate(unitPrefab);
-			Archer unit = Instantiate(testPrefab);
+			//Archer unit = Instantiate(testPrefab);
+			print(units.Length);
+			Unit unit = Instantiate(units[Random.Range(0, units.Length)]);
 			unit.transform.SetParent(hexGrid.transform, false);
 			unit.Location = cell;
 
@@ -103,5 +112,19 @@ public class MapEditor : MonoBehaviour {
 	void EditCell (HexCell cell){
 		cell.Color = activeColor;
 		cell.moveCost = cell.level [newIndex];
+	}
+
+	/**
+	 * updates the next turn
+	 *  TODO: move to a gamemanager
+	 **/
+	public void updateTurn(){
+		turn++;
+		print (turn);
+		// kalla a newTurn
+	}
+
+	protected void newTurn(){
+		
 	}
 }

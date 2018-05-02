@@ -6,11 +6,13 @@ public class Archer : Unit {
 
 
 	public Archer(){
-		speed = 2;
+		speed = 1;
 		range = 3;
 		damage = 4;
 		health = 5;
+		currentCooldown = 0;
 		cooldown = 4;
+
 	}
 	// Use this for initialization
 	//void Start () {

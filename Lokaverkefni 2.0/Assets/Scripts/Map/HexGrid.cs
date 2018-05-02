@@ -6,12 +6,14 @@ using System.IO;
 
 public class HexGrid : MonoBehaviour {
 
+	// mun fá gildi frá gameManager sem verða svo gildin, 10 er default value
 	//breidd borðsins
 	 int cellCountX = 10;
 	// public int width;
 	//hæð borðsins
 	int cellCountZ = 10;
-	//public int height;
+
+	public Material[] material;
 
 	public int chunkCountX = 2, chunkCountZ = 1;
 
@@ -30,10 +32,20 @@ public class HexGrid : MonoBehaviour {
 	HexCell[] cells;
 	HexGridChunk[] chunks;
 
+	List<HexCell> tilesInRange;
+	List<HexCell> unitsInRange;
+
 	HexCell currentPathFrom, currentPathTo, movementRange;
+	public HexCell CurrentPathTo {
+		get{
+			return currentPathTo;
+		}
+	}
 	bool currentPathExists;
 
 	List<Unit> units = new List<Unit>();
+
+	private MeshRenderer mesh;
 
 	public bool HasPath {
 		get {
@@ -49,6 +61,12 @@ public class HexGrid : MonoBehaviour {
 		CreateMap(cellCountX, cellCountZ);
 	}
 
+	/// <summary>
+	/// Creates the map.
+	/// </summary>
+	/// <returns><c>true</c>, if map was created, <c>false</c> otherwise.</returns>
+	/// <param name="x">The x coordinate.</param>
+	/// <param name="z">The z coordinate.</param>
 	public bool CreateMap (int x, int z) {
 
 		if (chunks != null) {
@@ -66,6 +84,9 @@ public class HexGrid : MonoBehaviour {
 		return true;
 	}
 
+	/// <summary>
+	/// Creates the chunks.
+	/// </summary>
 	void CreateChunks () {
 		chunks = new HexGridChunk[chunkCountX * chunkCountZ];
 
@@ -92,31 +113,37 @@ public class HexGrid : MonoBehaviour {
 	}
 		
 
+	/// <summary>
+	/// Gets the cell.
+	/// </summary>
+	/// <returns>The cell.</returns>
+	/// <param name="position">Position.</param>
 	public HexCell GetCell (Vector3 position) {
-		//print (position);
 		position = transform.InverseTransformPoint(position);
-		//print (position);
 		Coordinates coordinates = Coordinates.FromPosition(position);
-		//print ("C" + coordinates);
 		int index =
 			coordinates.X + coordinates.Z * cellCountX + coordinates.Z / 2;
 		return cells[index];
 	}
 
+	/// <summary>
+	/// Gets the cell from coordinates.
+	/// </summary>
+	/// <returns>The cell from coordinates.</returns>
+	/// <param name="x">The x coordinate.</param>
+	/// <param name="z">The z coordinate.</param>
 	public HexCell GetCellFromCoordinates (int x, int z) {
-		//int x = (int)coordinates.x;
-		//int y = (int)coordinates.y;
-		//int z = (int)coordinates.z;
-
-		//int index = x + z * cellCountX + z / 2;
-		//return cells[index];
-		print("hei");
 		print (cells [x + z * cellCountX]);
 		return cells[x + z * cellCountX];
 	}
 
+
+	/// <summary>
+	/// Gets the cell.
+	/// </summary>
+	/// <returns>The cell.</returns>
+	/// <param name="coordinates">Coordinates.</param>
 	public HexCell GetCell (Coordinates coordinates) {
-		print( "ping");
 		int z = coordinates.Z;
 		if (z < 0 || z >= cellCountZ) {
 			return null;
@@ -125,11 +152,15 @@ public class HexGrid : MonoBehaviour {
 		if (x < 0 || x >= cellCountX) {
 			return null;
 		}
-		print ("thisthis " + (x + z * cellCountX));
 		return cells[x + z * cellCountX];
 	}
 		
-
+	/// <summary>
+	/// Creates the cell.
+	/// </summary>
+	/// <param name="x">The x coordinate.</param>
+	/// <param name="z">The z coordinate.</param>
+	/// <param name="i">The index.</param>
 	void CreateCell (int x, int z, int i) {
 		Vector3 position;
 		position.x = (x + z * 0.5f - z / 2) * (HexMetrics.innerRadius * 2f);
@@ -143,6 +174,8 @@ public class HexGrid : MonoBehaviour {
 
 		//movemoentCost stilling
 		cell.moveCost = cell.level [cell.index];
+		mesh = cell.GetComponent<MeshRenderer> ();
+		mesh.materials [0] = material [0];
 
 		//stillum nágranna
 		//þetta stillir að reiturinn til vinstri ( vestur W) sé nágranni, viljum ekki númer 0
@@ -169,11 +202,6 @@ public class HexGrid : MonoBehaviour {
 		//stillum nafnið á nýja objectinu
 		cell.name= "x: " + x + " y: " + y +" z: " + z;
 
-		//stillum serial numer cells
-		//cell.serial.x = x;
-		//cell.serial.y = x;
-		//cell.serial.z = x;
-
 		Text label = Instantiate<Text>(coordinatesPrefab);
 		label.rectTransform.anchoredPosition =
 			new Vector2(position.x, position.z);
@@ -189,11 +217,7 @@ public class HexGrid : MonoBehaviour {
 		HexGridChunk chunk = chunks[chunkX + chunkZ * chunkCountX];
 
 		int localX = x - chunkX * HexMetrics.chunkSizeX;
-		//print (localX);
-
 		int localZ = z - chunkZ * HexMetrics.chunkSizeZ;
-		//print (localZ);
-		//Debug.Log ("index " + localX + localZ * HexMetrics.chunkSizeX);
 		chunk.AddCell(localX + localZ * HexMetrics.chunkSizeX, cell);
 	}
 
@@ -201,11 +225,25 @@ public class HexGrid : MonoBehaviour {
 		// nota thetta ef thu vilt sja algorithmanna 'i vinnslu
 		// StopAllCoroutines ();
 		// StartCoroutine (Search (fromCell, toCell, speed));
-		ClearPath();
+		//ClearPath();
 		currentPathFrom = fromCell;
 		currentPathTo = toCell;
 		currentPathExists = Search(fromCell, toCell, speed);
 		ShowPath(speed);
+
+	}
+
+	/// <summary>
+	///  Finds all the tiles a unit can reach and shows them
+	/// </summary>
+	/// uses reachableTiles to find the tiles and highlightReach to higlight
+	/// <param name="fromCell">From cell.</param>
+	/// <param name="speed">Speed.</param>
+	public void FindReachableTiles (HexCell fromCell, int speed) {
+
+		ClearReach();
+		tilesInRange = reachableTiles (fromCell, speed);
+		highlightReach ();
 
 	}
 
@@ -249,17 +287,13 @@ public class HexGrid : MonoBehaviour {
 
 			if (current == toCell) {
 				return true;
-				//current = current.PathFrom;
-				//while (current != fromCell) {
-				//	int turn = current.Distance / speed;
-				//	current.SetLabel(turn.ToString());
-			//		current.EnableHighlight (Color.blue);
-			//		current = current.PathFrom;
-			//	}
-			//	toCell.EnableHighlight (Color.red);
-			//	break;
 			}
 			int currentTurn = (current.Distance - 1) / speed;
+
+			//ef við erum komin yfir það sem við náum á einni umfeðr þá hættum við leit
+			if((current.Distance/speed) > 0){
+				break;
+			}
 
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
 				HexCell neighbor = current.GetNeighbor (d);
@@ -279,6 +313,8 @@ public class HexGrid : MonoBehaviour {
 
 				int distance = current.Distance + moveCost;
 				int turn = ( distance - 1 ) / speed;
+
+				//eydir movementi sem kall a eftir ef hann er ekki med nog til ad fara a naesta reit
 				if (turn > currentTurn) {
 					distance = turn * speed + moveCost;
 				}
@@ -309,14 +345,14 @@ public class HexGrid : MonoBehaviour {
 			HexCell current = currentPathTo;
 			while (current != currentPathFrom) {
 				int turn = (current.Distance-1) / speed;
-				current.SetLabel(turn.ToString());
+				//current.SetLabel(turn.ToString());
 				current.EnableHighlight(Color.white);
 				current = current.PathFrom;
 				current.turnsToReach = turn;
 			}
 		}
 		currentPathFrom.EnableHighlight(Color.blue);
-		currentPathTo.EnableHighlight(Color.red);
+		//currentPathTo.EnableHighlight(Color.red);
 	}
 
 	public void ClearPath () {
@@ -343,6 +379,7 @@ public class HexGrid : MonoBehaviour {
 
 	public List<HexCell> GetPath () {
 		if (!currentPathExists) {
+			print ("ekki til");
 			return null;
 		}
 		List<HexCell> path = ListPool<HexCell>.Get();
@@ -353,5 +390,112 @@ public class HexGrid : MonoBehaviour {
 		path.Reverse ();
 		return path;
 	}
-		
+
+	///<summary> <c>reachableTiles</c> Finnur alla reiti sem ákveðinn kall getur náð
+	/// </summary>
+	/// <returns> A list of HexCell that can be reached from a HexCell with the current speed</returns>
+	/// <param name="fromcell">fromCell</param>
+	/// <para name "speed"> speed</para>
+	public List<HexCell> reachableTiles ( HexCell fromCell, int speed){
+		List<HexCell> reachableTiles = new List<HexCell>();
+		searchFrontierPhase += 2;
+		if (searchFrontier == null) {
+			searchFrontier = new PriorityQueue ();
+		} else {
+			searchFrontier.Clear ();
+		}
+
+		fromCell.EnableHighlight (Color.white);
+
+		fromCell.SearchPhase = searchFrontierPhase;
+		fromCell.Distance = 0;
+		searchFrontier.Enqueue (fromCell);
+
+		while (searchFrontier.Count > 0) {
+
+			HexCell current = searchFrontier.Dequeue ();
+
+			current.SearchPhase += 1;
+
+	
+			int currentTurn = (current.Distance - 1) / speed;
+			if (currentTurn > 0) {
+				//print ("breakPoint");
+				//print (currentTurn);
+				continue;
+			} else if (currentTurn == 0) {
+				//print ("a ad koma oft");
+				reachableTiles.Add (current);
+				//current.EnableHighlight(Color.green);
+			}
+
+
+			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
+				HexCell neighbor = current.GetNeighbor (d);
+				if (neighbor == null ||
+					neighbor.SearchPhase > searchFrontierPhase) {
+					continue;
+				}
+
+				if (!neighbor.passable) {
+					continue;
+				}
+
+				//int distance = current.Distance;
+				int moveCost = 0;
+				// TODO:
+				moveCost += neighbor.moveCost;
+
+				int distance = current.Distance + moveCost;
+				int turn = ( distance - 1 ) / speed;
+				//eydir movementi sem kall a eftir ef hann er ekki med nog til ad fara a naesta reit
+				if (turn > currentTurn) {
+					distance = turn * speed + moveCost;
+				}
+				//ef við erum ekki búnir að skoða þenna reit áður
+				if (neighbor.SearchPhase < searchFrontierPhase) {
+					neighbor.SearchPhase = searchFrontierPhase;
+					neighbor.Distance = distance;
+					neighbor.PathFrom = current;
+					//neighbor.searchHueristic = neighbor.coordinates.DistanceTo (toCell.coordinates);
+					//frontier.Add (neighbor);
+					searchFrontier.Enqueue (neighbor);
+				} else if (distance < neighbor.Distance) {
+					int oldPriority = neighbor.SearchPriority;
+					neighbor.Distance = distance;
+					neighbor.PathFrom = current;
+					searchFrontier.Change (neighbor, oldPriority);
+				}
+
+			}
+		}
+		return reachableTiles;
+	}
+
+	// TODO: færa inn í findReachable tiles
+	public void highlightReach( ){
+		for (int i = 0; i < tilesInRange.Count; i++) {
+			tilesInRange[i].EnableHighlight(Color.green);
+		}
+	}
+
+	public void ClearReach () {
+		if (tilesInRange != null) {
+			print ("clearing");
+			for (int i = 0; i < tilesInRange.Count; i++) {
+				HexCell current = tilesInRange [i];
+				current.SetLabel (null);
+				//TODO: bretua i infinity
+				//current.turnsToReach = 1000;
+				current.DisableHighlight ();
+				//current = current.PathFrom;
+				current.DisableHighlight ();
+			}
+
+			tilesInRange = null;
+		}
+
+			//currentPathExists = false;
+		//currentPathFrom = currentPathTo = null;
+	}
 }
