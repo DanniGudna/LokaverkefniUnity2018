@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour {
 	//public HexGrid hexGrid;
 	//public static GameManager instance = null;
 
+
 	//breidd borðsins
 	int cellCountX = 10;
 	// public int width;
