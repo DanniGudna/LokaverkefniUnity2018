@@ -5,7 +5,7 @@ using UnityEngine;
 public class Spearman : Unit {
 
 	public Spearman(){
-		speed = 2;
+		speed = 1; //2
 		range = 1;
 		damage = 3;
 		health = 10;

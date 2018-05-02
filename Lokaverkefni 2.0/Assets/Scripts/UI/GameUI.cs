@@ -59,27 +59,32 @@ public class GameUI : MonoBehaviour {
 	/// Does the selection.
 	/// </summary>
 	void DoSelection () {
-		
 		grid.ClearPath();
 		grid.ClearReach ();
-		UpdateCurrentCell();
-		if (currentCell) {
+		grid.ClearAttackable ();
+
+		if (UpdateCurrentCell()) {
 			selectedUnit = currentCell.Unit;
-			if (selectedUnit) {
+			if (selectedUnit != null) {
 				grid.FindReachableTiles (currentCell, selectedUnit.Speed);
 			}
 			//if(selectedUnit.Cooldown 
 			//print ("upps");
 			//selectedUnit.moveRange (selectedUnit.Speed, currentCell);
+		} else{
+			//deselectum unitinn
+			selectedUnit = null;
+			//currentCell = null;
 		}
 	}
 
 	void DoPathfinding () {
-		grid.highlightReach();
+		grid.HighlightReach();
 		if (UpdateCurrentCell()) {
 			if (currentCell && selectedUnit.IsValidDestination(currentCell)) {
 				grid.FindPath (selectedUnit.Location, currentCell, selectedUnit.Speed);
-				//print ("this " + selectedUnit.Speed);
+				grid.FindAttackableTiles (grid.CurrentPathTo, selectedUnit.Range);
+
 			} else {
 				//grid.ClearPath ();
 				// TODO: ekki leita aftur geyma upplysingarnar
@@ -99,6 +104,7 @@ public class GameUI : MonoBehaviour {
 			selectedUnit.updateCooldown (selectedUnit);  
 			grid.ClearReach ();
 			grid.ClearPath();
+			grid.ClearAttackable ();
 			selectedUnit = null;
 		}
 	}

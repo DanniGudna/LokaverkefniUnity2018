@@ -114,7 +114,6 @@ public class Unit : MonoBehaviour {
 	/// <param name="cell">Cell.</param>
 	public bool IsValidDestination (HexCell cell) {
 		// return !cell.IsUnderwater;
-		print(cell.turnsToReach);
 		if ( cell.Unit || !cell.passable) {
 			return false;
 		}
@@ -127,14 +126,11 @@ public class Unit : MonoBehaviour {
 	public void Travel (List<HexCell> path) {
 		
 		int turnNodes = 0;
-		//print ("length " + path.Count);
 		for (int i = 0; i < path.Count - 1; i++) {
-			//print (path [i].turnsToReach);
 			if (path [i].turnsToReach == 0) {
 				turnNodes++;
 			}
 		}
-		//print("TN " + turnNodes);
 		Location = path[turnNodes];
 		pathToTravel = path;
 		StopAllCoroutines();
@@ -175,7 +171,6 @@ public class Unit : MonoBehaviour {
 	}
 
 	public void moveRange(int sp, HexCell location){
-		print (location);
 		//List<HexCell> = Range;
 		int xStart = location.coordinates.X - sp;
 		if (xStart < 0) {
@@ -190,18 +185,12 @@ public class Unit : MonoBehaviour {
 			for (int j= yStart; j <= yEnd; j++) {
 				int z = -i - j;
 				print ("x " + i + " y " + z + " z " + j);
-				//Coordinates position = new Coordinates(i,j);
-				//position (i, j);
-				//position.x = i;
-				//position.y = j;
-				//position.z = z;
-				//HexCell cellInRange;
+
 				HexCell cellInRange = hexGrid.GetCellFromCoordinates (i, j);
 
 				if (cellInRange != null) {
 					
 					cellInRange.Color = Color.green;
-					print (cellInRange.Color);
 				}
 			}
 		}
