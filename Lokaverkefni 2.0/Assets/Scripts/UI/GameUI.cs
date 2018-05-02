@@ -75,12 +75,15 @@ public class GameUI : MonoBehaviour {
 	}
 
 	void DoPathfinding () {
+		grid.highlightReach();
 		if (UpdateCurrentCell()) {
 			if (currentCell && selectedUnit.IsValidDestination(currentCell)) {
 				grid.FindPath (selectedUnit.Location, currentCell, selectedUnit.Speed);
 				//print ("this " + selectedUnit.Speed);
 			} else {
 				//grid.ClearPath ();
+				// TODO: ekki leita aftur geyma upplysingarnar
+				//grid.highlightReach();
 			}
 		}
 	}

@@ -243,7 +243,7 @@ public class HexGrid : MonoBehaviour {
 
 		ClearReach();
 		tilesInRange = reachableTiles (fromCell, speed);
-		highlightReach (tilesInRange);
+		highlightReach ();
 
 	}
 
@@ -345,7 +345,7 @@ public class HexGrid : MonoBehaviour {
 			HexCell current = currentPathTo;
 			while (current != currentPathFrom) {
 				int turn = (current.Distance-1) / speed;
-				current.SetLabel(turn.ToString());
+				//current.SetLabel(turn.ToString());
 				current.EnableHighlight(Color.white);
 				current = current.PathFrom;
 				current.turnsToReach = turn;
@@ -426,7 +426,7 @@ public class HexGrid : MonoBehaviour {
 			} else if (currentTurn == 0) {
 				//print ("a ad koma oft");
 				reachableTiles.Add (current);
-				current.EnableHighlight(Color.green);
+				//current.EnableHighlight(Color.green);
 			}
 
 
@@ -473,10 +473,10 @@ public class HexGrid : MonoBehaviour {
 	}
 
 	// TODO: færa inn í findReachable tiles
-	private void highlightReach( List<HexCell> tiles){
-		//for (int i = 0; i < tiles.Count; i++) {
-		//	tiles[i].EnableHighlight(Color.green);
-		//}
+	public void highlightReach( ){
+		for (int i = 0; i < tilesInRange.Count; i++) {
+			tilesInRange[i].EnableHighlight(Color.green);
+		}
 	}
 
 	public void ClearReach () {
