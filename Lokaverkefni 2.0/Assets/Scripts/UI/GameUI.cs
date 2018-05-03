@@ -96,6 +96,7 @@ public class GameUI : MonoBehaviour {
 	}
 
 	void DoPathfinding () {
+		grid.ClearAttackable ();
 		grid.HighlightReach();
 		if (UpdateCurrentCell()) {
 			if (currentCell && selectedUnit.IsValidDestination(currentCell)) {
@@ -148,13 +149,13 @@ public class GameUI : MonoBehaviour {
 
 		// lets play the appropriate sound
 		if(selectedUnit is Archer){
-			if(target.Health < 0){
+			if(target.Health < 1){
 				SoundManager.instance.PlaySingleClip(rangedFightDeath);
 			} else {
 				SoundManager.instance.PlaySingleClip(rangedFight);
 			}
 		} else {
-			if(target.Health < 0){
+			if(target.Health < 1){
 				SoundManager.instance.PlaySingleClip(meleeFightDeath);
 			} else {
 				SoundManager.instance.PlaySingleClip(meleeFight);
