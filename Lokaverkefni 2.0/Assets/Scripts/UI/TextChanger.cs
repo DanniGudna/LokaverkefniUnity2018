@@ -56,4 +56,11 @@ public class TextChanger : MonoBehaviour {
 		//target = instance.gameObject.transform.GetChild(13).GetComponent<Text> ();
 		//target.text = unit.Team;
 	}
+
+
+	public void UpdateTurnText (int turn){
+		target = instance.gameObject.transform.GetChild(14).GetComponent<Text> ();
+		target.text = "Turn: " + turn.ToString ();
+	}
+		
 }

@@ -35,6 +35,7 @@ public class GameUI : MonoBehaviour {
 	public void updateTurn(){
 		turn++;
 		print (turn);
+		text.UpdateTurnText (turn);
 		// kalla a newTurn
 	}
 
