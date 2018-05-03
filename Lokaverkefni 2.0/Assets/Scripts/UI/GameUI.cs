@@ -8,12 +8,21 @@ public class GameUI : MonoBehaviour {
 	HexCell currentCell;
 	MapEditor map;
 
+	public AudioClip[] selectedVoicelines;
+	public AudioClip[] walkingVoicelines;
+	public AudioClip[] attackingVoicelines;
+	public AudioClip meleeFight;
+	public AudioClip meleeFightDeath;
+	public AudioClip rangedFight;
+	public AudioClip rangedFightDeath;
+
+
 	Unit selectedUnit;
 	Unit selectedUnitSpeed;
 
 	// TODO: sameina
-	bool hasMoved = false;
-	bool hasAttacked = false;
+	//bool hasMoved = false;
+	//bool hasAttacked = false;
 	bool attacking = false;
 
 	protected int turn = 1;
@@ -30,8 +39,8 @@ public class GameUI : MonoBehaviour {
 
 	protected void newTurn(){
 		// TODO: breyta hvaða lið er að hreyfa sig
-		hasMoved = false;
-		hasAttacked = false;
+		//hasMoved = false;
+		//hasAttacked = false;
 	}
 
 	public void SetEditMode (bool toggle) {
@@ -62,6 +71,9 @@ public class GameUI : MonoBehaviour {
 		grid.ClearPath();
 		grid.ClearReach ();
 		grid.ClearAttackable ();
+		SoundManager.instance.PlayRandomVoiceline (selectedVoicelines);
+
+
 
 		if (UpdateCurrentCell()) {
 			selectedUnit = currentCell.Unit;
@@ -98,6 +110,7 @@ public class GameUI : MonoBehaviour {
 	void DoMove () {
 		if (grid.HasPath) {
 			// selectedUnit.Location = currentCell;
+			SoundManager.instance.PlayRandomVoiceline (walkingVoicelines);
 			selectedUnit.Travel(grid.GetPath());
 			// uppfæra cooldown á kall sem var að hreyfast 
 			selectedUnit.updateCooldown (selectedUnit);
@@ -112,6 +125,7 @@ public class GameUI : MonoBehaviour {
 	void DoAttackMove (Unit target) {
 		if (grid.HasPath) {
 			// selectedUnit.Location = currentCell;
+			SoundManager.instance.PlayRandomVoiceline (attackingVoicelines);
 			selectedUnit.Travel(grid.GetPath());
 			// uppfæra cooldown á kall sem var að hreyfast 
 			selectedUnit.updateCooldown (selectedUnit);
@@ -125,8 +139,32 @@ public class GameUI : MonoBehaviour {
 		if(target != null){
 			target.takeDamage (selectedUnit.Damage);
 		}
+		print (selectedUnit);
+		if(selectedUnit is Archer){
+			if(target.Health < 0){
+				SoundManager.instance.PlaySingleClip(rangedFightDeath);
+			} else {
+				SoundManager.instance.PlaySingleClip(rangedFight);
+			}
+		} else {
+			if(target.Health < 0){
+				SoundManager.instance.PlaySingleClip(meleeFightDeath);
+			} else {
+				SoundManager.instance.PlaySingleClip(meleeFight);
+			}
+		}
+
+		checkForDeath (target);
+		
+
 
 		selectedUnit = null;
+	}
+
+	void checkForDeath(Unit unit){
+		if (unit.Health < 1) {
+			unit.Die ();
+		}
 	}
 		
 
