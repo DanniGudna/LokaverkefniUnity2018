@@ -71,18 +71,24 @@ public class GameUI : MonoBehaviour {
 		grid.ClearPath();
 		grid.ClearReach ();
 		grid.ClearAttackable ();
-		SoundManager.instance.PlayRandomVoiceline (selectedVoicelines);
+
 
 
 
 		if (UpdateCurrentCell()) {
 			selectedUnit = currentCell.Unit;
-			if (selectedUnit != null) {
-				grid.FindReachableTiles (currentCell, selectedUnit.Speed);
+			print (selectedUnit.CurrentCooldown);
+			print (turn);
+			if (selectedUnit.CurrentCooldown < turn) {
+				SoundManager.instance.PlayRandomVoiceline (selectedVoicelines);
+				if (selectedUnit != null) {
+					grid.FindReachableTiles (currentCell, selectedUnit.Speed);
+				}
+			} else {
+				print ("upps");
+				selectedUnit = null;
+				currentCell = null;
 			}
-			//if(selectedUnit.Cooldown 
-			//print ("upps");
-			//selectedUnit.moveRange (selectedUnit.Speed, currentCell);
 		} else{
 			//deselectum unitinn
 			currentCell = null;
@@ -113,7 +119,7 @@ public class GameUI : MonoBehaviour {
 			SoundManager.instance.PlayRandomVoiceline (walkingVoicelines);
 			selectedUnit.Travel(grid.GetPath());
 			// uppfæra cooldown á kall sem var að hreyfast 
-			selectedUnit.updateCooldown (selectedUnit);
+			selectedUnit.CurrentCooldown = turn;
 
 			grid.ClearReach ();
 			grid.ClearPath();
@@ -128,7 +134,7 @@ public class GameUI : MonoBehaviour {
 			SoundManager.instance.PlayRandomVoiceline (attackingVoicelines);
 			selectedUnit.Travel(grid.GetPath());
 			// uppfæra cooldown á kall sem var að hreyfast 
-			selectedUnit.updateCooldown (selectedUnit);
+			selectedUnit.CurrentCooldown = turn;
 
 			grid.ClearReach ();
 			grid.ClearPath();
@@ -139,7 +145,8 @@ public class GameUI : MonoBehaviour {
 		if(target != null){
 			target.takeDamage (selectedUnit.Damage);
 		}
-		print (selectedUnit);
+
+		// lets play the appropriate sound
 		if(selectedUnit is Archer){
 			if(target.Health < 0){
 				SoundManager.instance.PlaySingleClip(rangedFightDeath);
@@ -180,11 +187,13 @@ public class GameUI : MonoBehaviour {
 						if (grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition)) == grid.CurrentPathTo) {
 							
 							DoMove ();
+							updateTurn ();
 						
 						} else if (grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition)).attackable) {
 							HexCell cellTarget = grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition));
 							Unit target = cellTarget.Unit;
 							DoAttackMove (target);
+							updateTurn ();
 						} else {
 							DoPathfinding ();
 							//grid.FindAttackableTiles (grid.CurrentPathTo, selectedUnit.Range);

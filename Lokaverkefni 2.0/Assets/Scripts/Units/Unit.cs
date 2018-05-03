@@ -40,7 +40,7 @@ public class Unit : MonoBehaviour {
 	}
 
 	public int Damage {
-		get {
+		 get {
 			return damage;
 		}
 	}
@@ -57,9 +57,13 @@ public class Unit : MonoBehaviour {
 		}
 	}
 
-	public int CurrentColldown {
+	public int CurrentCooldown {
 		get {
 			return currentCooldown;
+		}
+
+		set { 
+			currentCooldown = value + cooldown;
 		}
 	}
 
@@ -200,9 +204,9 @@ public class Unit : MonoBehaviour {
 	} 
 
 
-	public void updateCooldown(Unit unit){
-		unit.currentCooldown += unit.cooldown;
-	}
+	//public void updateCooldown(Unit unit){
+	//	unit.currentCooldown += unit.cooldown;
+	//}
 
 	public void takeDamage(int damage){
 		print ("hp " + this.health);
