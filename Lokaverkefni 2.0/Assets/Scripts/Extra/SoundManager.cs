@@ -16,7 +16,10 @@ public class SoundManager : MonoBehaviour {
 		} else if (instance != this) {
 			Destroy (gameObject);
 		}
-		
+
+		print (voiceSource.volume);
+		voiceSource.volume = voiceSource.volume + 150;
+		print (voiceSource.volume);
 		DontDestroyOnLoad (gameObject);
 	}
 
@@ -28,6 +31,7 @@ public class SoundManager : MonoBehaviour {
 	}
 
 	public void PlaySingleClip (AudioClip clip){
+		
 		voiceSource.clip = clip;
 		voiceSource.Play ();
 	}

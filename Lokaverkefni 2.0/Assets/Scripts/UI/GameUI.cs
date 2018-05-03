@@ -76,18 +76,18 @@ public class GameUI : MonoBehaviour {
 
 
 		if (UpdateCurrentCell()) {
-			selectedUnit = currentCell.Unit;
-			print (selectedUnit.CurrentCooldown);
-			print (turn);
-			if (selectedUnit.CurrentCooldown < turn) {
-				SoundManager.instance.PlayRandomVoiceline (selectedVoicelines);
-				if (selectedUnit != null) {
-					grid.FindReachableTiles (currentCell, selectedUnit.Speed);
+			if (currentCell.Unit != null) {
+				selectedUnit = currentCell.Unit;
+				if (selectedUnit.CurrentCooldown < turn) {
+					SoundManager.instance.PlayRandomVoiceline (selectedVoicelines);
+					if (selectedUnit != null) {
+						grid.FindReachableTiles (currentCell, selectedUnit.Speed);
+					}
+				} else {
+					print ("upps");
+					selectedUnit = null;
+					currentCell = null;
 				}
-			} else {
-				print ("upps");
-				selectedUnit = null;
-				currentCell = null;
 			}
 		} else{
 			//deselectum unitinn
