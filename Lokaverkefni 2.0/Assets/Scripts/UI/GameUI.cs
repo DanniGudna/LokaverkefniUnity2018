@@ -7,6 +7,7 @@ public class GameUI : MonoBehaviour {
 
 	HexCell currentCell;
 	MapEditor map;
+	public TextChanger text;
 
 	public AudioClip[] selectedVoicelines;
 	public AudioClip[] walkingVoicelines;
@@ -34,6 +35,7 @@ public class GameUI : MonoBehaviour {
 	public void updateTurn(){
 		turn++;
 		print (turn);
+		text.UpdateTurnText (turn);
 		// kalla a newTurn
 	}
 
@@ -76,18 +78,19 @@ public class GameUI : MonoBehaviour {
 
 
 		if (UpdateCurrentCell()) {
-			selectedUnit = currentCell.Unit;
-			print (selectedUnit.CurrentCooldown);
-			print (turn);
-			if (selectedUnit.CurrentCooldown < turn) {
-				SoundManager.instance.PlayRandomVoiceline (selectedVoicelines);
-				if (selectedUnit != null) {
-					grid.FindReachableTiles (currentCell, selectedUnit.Speed);
+			if (currentCell.Unit != null) {
+				selectedUnit = currentCell.Unit;
+				text.NewSelectedUnit (selectedUnit);
+				if (selectedUnit.CurrentCooldown < turn) {
+					SoundManager.instance.PlayRandomVoiceline (selectedVoicelines);
+					if (selectedUnit != null) {
+						grid.FindReachableTiles (currentCell, selectedUnit.Speed);
+					}
+				} else {
+					print ("upps");
+					selectedUnit = null;
+					currentCell = null;
 				}
-			} else {
-				print ("upps");
-				selectedUnit = null;
-				currentCell = null;
 			}
 		} else{
 			//deselectum unitinn
@@ -96,6 +99,7 @@ public class GameUI : MonoBehaviour {
 	}
 
 	void DoPathfinding () {
+		grid.ClearAttackable ();
 		grid.HighlightReach();
 		if (UpdateCurrentCell()) {
 			if (currentCell && selectedUnit.IsValidDestination(currentCell)) {
@@ -148,13 +152,13 @@ public class GameUI : MonoBehaviour {
 
 		// lets play the appropriate sound
 		if(selectedUnit is Archer){
-			if(target.Health < 0){
+			if(target.Health < 1){
 				SoundManager.instance.PlaySingleClip(rangedFightDeath);
 			} else {
 				SoundManager.instance.PlaySingleClip(rangedFight);
 			}
 		} else {
-			if(target.Health < 0){
+			if(target.Health < 1){
 				SoundManager.instance.PlaySingleClip(meleeFightDeath);
 			} else {
 				SoundManager.instance.PlaySingleClip(meleeFight);

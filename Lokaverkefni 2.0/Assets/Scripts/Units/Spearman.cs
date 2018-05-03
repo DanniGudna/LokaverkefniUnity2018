@@ -11,6 +11,7 @@ public class Spearman : Unit {
 		health = 10;
 		currentCooldown = 0;
 		cooldown = 3;
+		type = "Spearman";
 
 	}
 }
