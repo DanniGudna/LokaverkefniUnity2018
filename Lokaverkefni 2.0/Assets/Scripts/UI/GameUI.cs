@@ -7,6 +7,7 @@ public class GameUI : MonoBehaviour {
 
 	HexCell currentCell;
 	MapEditor map;
+	TextChanger text = new TextChanger();
 
 	public AudioClip[] selectedVoicelines;
 	public AudioClip[] walkingVoicelines;
@@ -78,6 +79,7 @@ public class GameUI : MonoBehaviour {
 		if (UpdateCurrentCell()) {
 			if (currentCell.Unit != null) {
 				selectedUnit = currentCell.Unit;
+				text.NewSelectedUnit (selectedUnit);
 				if (selectedUnit.CurrentCooldown < turn) {
 					SoundManager.instance.PlayRandomVoiceline (selectedVoicelines);
 					if (selectedUnit != null) {

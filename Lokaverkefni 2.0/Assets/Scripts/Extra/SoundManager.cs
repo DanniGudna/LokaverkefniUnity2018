@@ -17,9 +17,6 @@ public class SoundManager : MonoBehaviour {
 			Destroy (gameObject);
 		}
 
-		print (voiceSource.volume);
-		voiceSource.volume = voiceSource.volume + 150;
-		print (voiceSource.volume);
 		DontDestroyOnLoad (gameObject);
 	}
 

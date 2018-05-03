@@ -11,6 +11,7 @@ public class Rider : Unit {
 		health = 8;
 		currentCooldown = 0;
 		cooldown = 2;
+		type = "Rider";
 	}
 
 }

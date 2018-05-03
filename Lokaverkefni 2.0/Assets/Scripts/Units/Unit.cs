@@ -22,6 +22,8 @@ public class Unit : MonoBehaviour {
 	protected int range;
 	//er hægt að hreyfa kallinn?
 	protected bool movable;
+	// type of unit
+	protected string type;
 
 	public int Speed {
 		get {
@@ -54,6 +56,12 @@ public class Unit : MonoBehaviour {
 	public int Range {
 		get {
 			return range;
+		}
+	}
+
+	public string Type {
+		get {
+			return type;
 		}
 	}
 

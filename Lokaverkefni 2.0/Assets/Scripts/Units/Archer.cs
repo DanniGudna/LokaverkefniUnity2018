@@ -12,6 +12,7 @@ public class Archer : Unit {
 		health = 5;
 		currentCooldown = 0;
 		cooldown = 4;
+		type = "Archer";
 
 	}
 	// Use this for initialization
