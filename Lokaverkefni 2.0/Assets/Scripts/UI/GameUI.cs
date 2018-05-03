@@ -7,7 +7,7 @@ public class GameUI : MonoBehaviour {
 
 	HexCell currentCell;
 	MapEditor map;
-	TextChanger text = new TextChanger();
+	public TextChanger text;
 
 	public AudioClip[] selectedVoicelines;
 	public AudioClip[] walkingVoicelines;
