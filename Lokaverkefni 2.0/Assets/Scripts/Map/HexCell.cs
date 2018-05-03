@@ -20,6 +20,8 @@ public class HexCell : MonoBehaviour {
 
 	public int index;
 
+	public bool attackable;
+
 	public int turnsToReach;
 
 	public int SearchPhase { get; set; }

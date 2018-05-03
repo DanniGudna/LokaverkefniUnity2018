@@ -8,12 +8,21 @@ public class GameUI : MonoBehaviour {
 	HexCell currentCell;
 	MapEditor map;
 
+	public AudioClip[] selectedVoicelines;
+	public AudioClip[] walkingVoicelines;
+	public AudioClip[] attackingVoicelines;
+	public AudioClip meleeFight;
+	public AudioClip meleeFightDeath;
+	public AudioClip rangedFight;
+	public AudioClip rangedFightDeath;
+
+
 	Unit selectedUnit;
 	Unit selectedUnitSpeed;
 
 	// TODO: sameina
-	bool hasMoved = false;
-	bool hasAttacked = false;
+	//bool hasMoved = false;
+	//bool hasAttacked = false;
 	bool attacking = false;
 
 	protected int turn = 1;
@@ -30,8 +39,8 @@ public class GameUI : MonoBehaviour {
 
 	protected void newTurn(){
 		// TODO: breyta hvaða lið er að hreyfa sig
-		hasMoved = false;
-		hasAttacked = false;
+		//hasMoved = false;
+		//hasAttacked = false;
 	}
 
 	public void SetEditMode (bool toggle) {
@@ -59,27 +68,40 @@ public class GameUI : MonoBehaviour {
 	/// Does the selection.
 	/// </summary>
 	void DoSelection () {
-		
 		grid.ClearPath();
 		grid.ClearReach ();
-		UpdateCurrentCell();
-		if (currentCell) {
+		grid.ClearAttackable ();
+
+
+
+
+		if (UpdateCurrentCell()) {
 			selectedUnit = currentCell.Unit;
-			if (selectedUnit) {
-				grid.FindReachableTiles (currentCell, selectedUnit.Speed);
+			print (selectedUnit.CurrentCooldown);
+			print (turn);
+			if (selectedUnit.CurrentCooldown < turn) {
+				SoundManager.instance.PlayRandomVoiceline (selectedVoicelines);
+				if (selectedUnit != null) {
+					grid.FindReachableTiles (currentCell, selectedUnit.Speed);
+				}
+			} else {
+				print ("upps");
+				selectedUnit = null;
+				currentCell = null;
 			}
-			//if(selectedUnit.Cooldown 
-			//print ("upps");
-			//selectedUnit.moveRange (selectedUnit.Speed, currentCell);
+		} else{
+			//deselectum unitinn
+			currentCell = null;
 		}
 	}
 
 	void DoPathfinding () {
-		grid.highlightReach();
+		grid.HighlightReach();
 		if (UpdateCurrentCell()) {
 			if (currentCell && selectedUnit.IsValidDestination(currentCell)) {
 				grid.FindPath (selectedUnit.Location, currentCell, selectedUnit.Speed);
-				//print ("this " + selectedUnit.Speed);
+				grid.FindAttackableTiles (grid.CurrentPathTo, selectedUnit.Range);
+
 			} else {
 				//grid.ClearPath ();
 				// TODO: ekki leita aftur geyma upplysingarnar
@@ -94,21 +116,64 @@ public class GameUI : MonoBehaviour {
 	void DoMove () {
 		if (grid.HasPath) {
 			// selectedUnit.Location = currentCell;
+			SoundManager.instance.PlayRandomVoiceline (walkingVoicelines);
 			selectedUnit.Travel(grid.GetPath());
 			// uppfæra cooldown á kall sem var að hreyfast 
-			selectedUnit.updateCooldown (selectedUnit);  
+			selectedUnit.CurrentCooldown = turn;
+
 			grid.ClearReach ();
 			grid.ClearPath();
+			grid.ClearAttackable ();
 			selectedUnit = null;
 		}
 	}
 
-	void DoTurnMove (){
+	void DoAttackMove (Unit target) {
 		if (grid.HasPath) {
-			//currentPath 
+			// selectedUnit.Location = currentCell;
+			SoundManager.instance.PlayRandomVoiceline (attackingVoicelines);
+			selectedUnit.Travel(grid.GetPath());
+			// uppfæra cooldown á kall sem var að hreyfast 
+			selectedUnit.CurrentCooldown = turn;
+
+			grid.ClearReach ();
+			grid.ClearPath();
+			grid.ClearAttackable ();
+
+		}
+		// check for safety
+		if(target != null){
+			target.takeDamage (selectedUnit.Damage);
+		}
+
+		// lets play the appropriate sound
+		if(selectedUnit is Archer){
+			if(target.Health < 0){
+				SoundManager.instance.PlaySingleClip(rangedFightDeath);
+			} else {
+				SoundManager.instance.PlaySingleClip(rangedFight);
+			}
+		} else {
+			if(target.Health < 0){
+				SoundManager.instance.PlaySingleClip(meleeFightDeath);
+			} else {
+				SoundManager.instance.PlaySingleClip(meleeFight);
+			}
+		}
+
+		checkForDeath (target);
 		
+
+
+		selectedUnit = null;
+	}
+
+	void checkForDeath(Unit unit){
+		if (unit.Health < 1) {
+			unit.Die ();
 		}
 	}
+		
 
 	void Update () {
 		if (!EventSystem.current.IsPointerOverGameObject()) {
@@ -120,13 +185,18 @@ public class GameUI : MonoBehaviour {
 					// TODO: hvad ef kall vill ekki hrefa sig?
 					if (!attacking) {
 						if (grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition)) == grid.CurrentPathTo) {
+							
 							DoMove ();
-							// TODO: finna hvaða kallar eru in range
-
-							//hasMoved = true;
-						// ef aftur er ytt a sama reit tha hreyfa kallinn
+							updateTurn ();
+						
+						} else if (grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition)).attackable) {
+							HexCell cellTarget = grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition));
+							Unit target = cellTarget.Unit;
+							DoAttackMove (target);
+							updateTurn ();
 						} else {
 							DoPathfinding ();
+							//grid.FindAttackableTiles (grid.CurrentPathTo, selectedUnit.Range);
 						}
 					} else {
 				//	DoPathfinding ();

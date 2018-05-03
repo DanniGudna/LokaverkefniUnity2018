@@ -26,7 +26,6 @@ public class GameManager : MonoBehaviour {
 		//DontDestroyOnLoad (gameObject);
 		//hexGrid = GetComponent<HexGrid> ();
 		//hexGrid = GetComponentInChildren<HexGrid>();
-		//print (hexGrid);
 		//InitGame ();
 
 	}

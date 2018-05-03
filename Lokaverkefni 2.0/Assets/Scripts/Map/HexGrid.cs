@@ -33,7 +33,17 @@ public class HexGrid : MonoBehaviour {
 	HexGridChunk[] chunks;
 
 	List<HexCell> tilesInRange;
+	public List<HexCell> TilesInRange {
+		get{
+			return tilesInRange;
+		}
+	}
 	List<HexCell> unitsInRange;
+	public List<HexCell> UnitsInRange {
+		get{
+			return unitsInRange;
+		}
+	}
 
 	HexCell currentPathFrom, currentPathTo, movementRange;
 	public HexCell CurrentPathTo {
@@ -111,6 +121,12 @@ public class HexGrid : MonoBehaviour {
 			}
 		}
 	}
+
+	public void FindDistancesTo (HexCell cell){
+		for (int i = 0; i < cells.Length; i++) {
+			cells[i].Distance = cell.coordinates.DistanceTo(cells[i].coordinates);
+		}
+	}
 		
 
 	/// <summary>
@@ -133,7 +149,6 @@ public class HexGrid : MonoBehaviour {
 	/// <param name="x">The x coordinate.</param>
 	/// <param name="z">The z coordinate.</param>
 	public HexCell GetCellFromCoordinates (int x, int z) {
-		print (cells [x + z * cellCountX]);
 		return cells[x + z * cellCountX];
 	}
 
@@ -225,7 +240,7 @@ public class HexGrid : MonoBehaviour {
 		// nota thetta ef thu vilt sja algorithmanna 'i vinnslu
 		// StopAllCoroutines ();
 		// StartCoroutine (Search (fromCell, toCell, speed));
-		//ClearPath();
+		ClearPath();
 		currentPathFrom = fromCell;
 		currentPathTo = toCell;
 		currentPathExists = Search(fromCell, toCell, speed);
@@ -243,7 +258,15 @@ public class HexGrid : MonoBehaviour {
 
 		ClearReach();
 		tilesInRange = reachableTiles (fromCell, speed);
-		highlightReach ();
+		HighlightReach ();
+
+	}
+
+	public void FindAttackableTiles(HexCell fromCell, int range){
+
+		//ClearAttackable ();
+		unitsInRange = attackableTiles (fromCell, range);
+		HighlightInRange ();
 
 	}
 
@@ -256,6 +279,12 @@ public class HexGrid : MonoBehaviour {
 	}
 		
 
+	/// <summary>
+	/// Checks if there is a path from fromCell to toCell and how long it takes with the given speed
+	/// </summary>
+	/// <param name="fromCell">From cell.</param>
+	/// <param name="toCell">To cell.</param>
+	/// <param name="speed">Speed.</param>
 	bool Search (HexCell fromCell, HexCell toCell, int speed) {
 		searchFrontierPhase += 2;
 		if (searchFrontier == null) {
@@ -368,7 +397,7 @@ public class HexGrid : MonoBehaviour {
 			current.DisableHighlight();
 			currentPathExists = false;
 		}
-		currentPathFrom = currentPathTo = null;
+		//currentPathFrom = currentPathTo = null;
 	}
 
 	public void ShowUI (bool visible) {
@@ -383,7 +412,10 @@ public class HexGrid : MonoBehaviour {
 			return null;
 		}
 		List<HexCell> path = ListPool<HexCell>.Get();
+		//print (currentPathTo);
+		//print (currentPathFrom);
 		for (HexCell c = currentPathTo; c != currentPathFrom; c = c.PathFrom) {
+			//print (c.PathFrom);
 			path.Add(c);
 		}
 		path.Add(currentPathFrom);
@@ -405,7 +437,7 @@ public class HexGrid : MonoBehaviour {
 			searchFrontier.Clear ();
 		}
 
-		fromCell.EnableHighlight (Color.white);
+		//fromCell.EnableHighlight (Color.white);
 
 		fromCell.SearchPhase = searchFrontierPhase;
 		fromCell.Distance = 0;
@@ -417,18 +449,13 @@ public class HexGrid : MonoBehaviour {
 
 			current.SearchPhase += 1;
 
-	
 			int currentTurn = (current.Distance - 1) / speed;
 			if (currentTurn > 0) {
-				//print ("breakPoint");
-				//print (currentTurn);
 				continue;
 			} else if (currentTurn == 0) {
-				//print ("a ad koma oft");
 				reachableTiles.Add (current);
 				//current.EnableHighlight(Color.green);
 			}
-
 
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
 				HexCell neighbor = current.GetNeighbor (d);
@@ -472,30 +499,84 @@ public class HexGrid : MonoBehaviour {
 		return reachableTiles;
 	}
 
-	// TODO: færa inn í findReachable tiles
-	public void highlightReach( ){
-		for (int i = 0; i < tilesInRange.Count; i++) {
-			tilesInRange[i].EnableHighlight(Color.green);
+	public List<HexCell> attackableTiles ( HexCell fromCell, int range){
+		List<HexCell> attackableTiles = new List<HexCell>();
+		//TODO: gera hagkvaemara!!!
+		for (int i = 0; i < cells.Length; i++) {
+			cells[i].Distance = fromCell.coordinates.DistanceTo(cells[i].coordinates);
+			cells[i].SetLabel(cells[i].Distance.ToString());
+			//if (cells[i].Distance > range){
+			//	break;
+			//}
+			if (cells[i].Distance <= range){
+				attackableTiles.Add (cells [i]);
+			}
+			//attackableTiles.Add (cells [i]);
+
+		}
+		return attackableTiles;
+	}
+
+		
+	public void HighlightReach( ){
+		if (tilesInRange != null) {
+			for (int i = 0; i < tilesInRange.Count; i++) {
+				tilesInRange [i].EnableHighlight (Color.green);
+			}
 		}
 	}
 
+	public void HighlightInRange( ){
+		for (int i = 0; i < unitsInRange.Count; i++) {
+			if (unitsInRange [i].Unit != null) {
+				unitsInRange [i].EnableHighlight (Color.red);
+				unitsInRange [i].attackable = true;
+			}
+		}
+	}
+
+	//TODO: sameina þetta og næsta fall, eins og er tilesInRange ekki public
 	public void ClearReach () {
 		if (tilesInRange != null) {
-			print ("clearing");
 			for (int i = 0; i < tilesInRange.Count; i++) {
 				HexCell current = tilesInRange [i];
 				current.SetLabel (null);
-				//TODO: bretua i infinity
-				//current.turnsToReach = 1000;
 				current.DisableHighlight ();
-				//current = current.PathFrom;
+			}
+
+			tilesInRange = null;
+		}
+			
+	}
+
+	//TODO: sameina þetta og næsta fall, eins og er tilesInRange ekki public
+	public void ClearAttackable () {
+		if (unitsInRange!= null) {
+			for (int i = 0; i < unitsInRange.Count; i++) {
+				HexCell current = unitsInRange [i];
+				current.SetLabel (null);
+				current.attackable = false;
 				current.DisableHighlight ();
 			}
 
 			tilesInRange = null;
 		}
 
-			//currentPathExists = false;
-		//currentPathFrom = currentPathTo = null;
+	}
+
+
+	// ekki nota[ i bili mun lagfaera seinna og nota thetta
+	public void ClearHiglighted (List<HexCell> highlighted ) {
+		if (highlighted != null) {
+			for (int i = 0; i < highlighted.Count; i++) {
+				HexCell current = highlighted [i];
+				current.SetLabel (null);
+				current.DisableHighlight ();
+				current.DisableHighlight ();
+			}
+
+			//tilesInRange = null;
+		}
+
 	}
 }
