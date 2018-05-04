@@ -15,10 +15,6 @@ public class MapEditor : MonoBehaviour {
 
 	private int newIndex;
 
-	public Unit unitPrefab;
-
-	public Archer testPrefab;
-
 	public Unit[] units;
 
 	//TODO: ekki hafa h'er heldur 'i gameManager
@@ -42,7 +38,6 @@ public class MapEditor : MonoBehaviour {
 			if (GetCellUnderCursor () != null) {
 				if (GetCellUnderCursor ().Unit != null) {
 					canvasHoover.enabled = true;
-					print (GetCellUnderCursor ().Unit);
 					hoover.NewSelectedUnit (GetCellUnderCursor ().Unit);
 				} else {
 					canvasHoover.enabled = false;

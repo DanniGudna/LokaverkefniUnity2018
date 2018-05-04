@@ -71,8 +71,8 @@ public class GameUI : MonoBehaviour {
 	/// </summary>
 	void DoSelection () {
 		grid.ClearPath();
-		grid.ClearReach ();
-		grid.ClearAttackable ();
+		grid.ClearTilesInRange ();
+		grid.ClearAttackableTiles ();
 
 
 
@@ -99,12 +99,15 @@ public class GameUI : MonoBehaviour {
 	}
 
 	void DoPathfinding () {
-		grid.ClearAttackable ();
-		grid.HighlightReach();
+		grid.ClearAttackableTiles ();
+		grid.HighlightTilesInRange();
 		if (UpdateCurrentCell()) {
 			if (currentCell && selectedUnit.IsValidDestination(currentCell)) {
 				grid.FindPath (selectedUnit.Location, currentCell, selectedUnit.Speed);
 				grid.FindAttackableTiles (grid.CurrentPathTo, selectedUnit.Range);
+				// TODO: finna betri lausn ekki kalla 2 #á þessi föll #í hvert skipti
+				grid.HighlightTilesInRange();
+				grid.ShowPath ();
 
 			} else {
 				//grid.ClearPath ();
@@ -125,9 +128,9 @@ public class GameUI : MonoBehaviour {
 			// uppfæra cooldown á kall sem var að hreyfast 
 			selectedUnit.CurrentCooldown = turn;
 
-			grid.ClearReach ();
+			grid.ClearTilesInRange ();
 			grid.ClearPath();
-			grid.ClearAttackable ();
+			grid.ClearAttackableTiles ();
 			selectedUnit = null;
 		}
 	}
@@ -140,9 +143,9 @@ public class GameUI : MonoBehaviour {
 			// uppfæra cooldown á kall sem var að hreyfast 
 			selectedUnit.CurrentCooldown = turn;
 
-			grid.ClearReach ();
+			grid.ClearTilesInRange ();
 			grid.ClearPath();
-			grid.ClearAttackable ();
+			grid.ClearAttackableTiles ();
 
 		}
 		// check for safety
@@ -181,7 +184,7 @@ public class GameUI : MonoBehaviour {
 
 	void Update () {
 		if (!EventSystem.current.IsPointerOverGameObject()) {
-			if (Input.GetMouseButtonDown (0)) {
+			if (Input.GetMouseButtonDown (0)) {;
 				DoSelection ();
 			} else if (selectedUnit) {
 				if (Input.GetMouseButtonDown (1)) {
@@ -189,7 +192,6 @@ public class GameUI : MonoBehaviour {
 					// TODO: hvad ef kall vill ekki hrefa sig?
 					if (!attacking) {
 						if (grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition)) == grid.CurrentPathTo) {
-							
 							DoMove ();
 							updateTurn ();
 						

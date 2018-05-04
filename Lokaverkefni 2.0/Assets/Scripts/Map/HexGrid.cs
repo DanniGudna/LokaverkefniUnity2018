@@ -256,7 +256,7 @@ public class HexGrid : MonoBehaviour {
 		currentPathFrom = fromCell;
 		currentPathTo = toCell;
 		currentPathExists = Search(fromCell, toCell, speed);
-		ShowPath(speed);
+		ShowPath();
 
 	}
 
@@ -268,9 +268,9 @@ public class HexGrid : MonoBehaviour {
 	/// <param name="speed">Speed.</param>
 	public void FindReachableTiles (HexCell fromCell, int speed) {
 
-		ClearReach();
+		ClearTilesInRange();
 		tilesInRange = reachableTiles (fromCell, speed);
-		HighlightReach ();
+		HighlightTilesInRange ();
 
 	}
 
@@ -283,7 +283,7 @@ public class HexGrid : MonoBehaviour {
 
 		//ClearAttackable ();
 		unitsInRange = attackableTiles (fromCell, range);
-		HighlightInRange ();
+		HighlightAttackableTiles ();
 
 	}
 
@@ -381,14 +381,14 @@ public class HexGrid : MonoBehaviour {
 	/// Shows the path.
 	/// </summary>
 	/// <param name="speed">Speed.</param>
-	void ShowPath (int speed) {
+	public void ShowPath (/*int speed*/) {
 		if (currentPathExists) {
 			HexCell current = currentPathTo;
 			while (current != currentPathFrom) {
-				int turn = (current.Distance-1) / speed;
+				//int turn = (current.Distance-1) / speed;
 				current.EnableHighlight(Color.white);
 				current = current.PathFrom;
-				current.turnsToReach = turn;
+				current.turnsToReach = 0;
 			}
 		}
 		currentPathFrom.EnableHighlight(Color.blue);
@@ -521,7 +521,7 @@ public class HexGrid : MonoBehaviour {
 		//TODO: gera hagkvaemara!!!
 		for (int i = 0; i < cells.Length; i++) {
 			cells[i].Distance = fromCell.coordinates.DistanceTo(cells[i].coordinates);
-			cells[i].SetLabel(cells[i].Distance.ToString());
+			//cells[i].SetLabel(cells[i].Distance.ToString());
 			//if (cells[i].Distance > range){
 			//	break;
 			//}
@@ -538,7 +538,7 @@ public class HexGrid : MonoBehaviour {
 	/// <summary>
 	/// Highlights cells within reach.
 	/// </summary>
-	public void HighlightReach( ){
+	public void HighlightTilesInRange( ){
 		if (tilesInRange != null) {
 			for (int i = 0; i < tilesInRange.Count; i++) {
 				tilesInRange [i].EnableHighlight (Color.green);
@@ -549,7 +549,7 @@ public class HexGrid : MonoBehaviour {
 	/// <summary>
 	/// Highlights cells in range.
 	/// </summary>
-	public void HighlightInRange( ){
+	public void HighlightAttackableTiles( ){
 		for (int i = 0; i < unitsInRange.Count; i++) {
 			if (unitsInRange [i].Unit != null) {
 				unitsInRange [i].EnableHighlight (Color.red);
@@ -559,7 +559,7 @@ public class HexGrid : MonoBehaviour {
 	}
 
 	//TODO: sameina þetta og næsta fall, eins og er tilesInRange ekki public
-	public void ClearReach () {
+	public void ClearTilesInRange () {
 		if (tilesInRange != null) {
 			for (int i = 0; i < tilesInRange.Count; i++) {
 				HexCell current = tilesInRange [i];
@@ -573,7 +573,7 @@ public class HexGrid : MonoBehaviour {
 	}
 
 	//TODO: sameina þetta og næsta fall, eins og er tilesInRange ekki public
-	public void ClearAttackable () {
+	public void ClearAttackableTiles () {
 		if (unitsInRange!= null) {
 			for (int i = 0; i < unitsInRange.Count; i++) {
 				HexCell current = unitsInRange [i];
@@ -582,7 +582,7 @@ public class HexGrid : MonoBehaviour {
 				current.DisableHighlight ();
 			}
 
-			tilesInRange = null;
+			unitsInRange = null;
 		}
 
 	}
