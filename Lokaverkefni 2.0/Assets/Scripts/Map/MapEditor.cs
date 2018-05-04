@@ -26,16 +26,28 @@ public class MapEditor : MonoBehaviour {
 
 	// TODO: athuga laga svo þetta sé ekki bara breytt í inspector
 	public bool editMode = true;
-
+	public TextChanger hoover;
+	public Canvas canvasHoover;
 	HexCell previousCell;
 
 	void Awake () {
 		SelectColor(0);
+		canvasHoover.enabled = false;
 	}
 
 	void Update () {
 
 		if (!EventSystem.current.IsPointerOverGameObject()) {
+			// auka check /ar til m'us getur ekki fari[ ut fyrir map
+			if (GetCellUnderCursor () != null) {
+				if (GetCellUnderCursor ().Unit != null) {
+					canvasHoover.enabled = true;
+					print (GetCellUnderCursor ().Unit);
+					hoover.NewSelectedUnit (GetCellUnderCursor ().Unit);
+				} else {
+					canvasHoover.enabled = false;
+				}
+			}
 			if (Input.GetMouseButton(0)) {
 				HandleInput();
 				return;
@@ -58,7 +70,7 @@ public class MapEditor : MonoBehaviour {
 		return
 			hexGrid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
 	}
-	// TODO: mögulega þarf að bæta við boolean upp á hvort sé að breyta um lit eða finna distance
+
 	void HandleInput () {
 		HexCell currentCell = GetCellUnderCursor();
 		if (currentCell) {
@@ -81,7 +93,10 @@ public class MapEditor : MonoBehaviour {
 		cell.moveCost = cell.level[cell.index];
 	}
 
-	// búa til unit
+
+	/// <summary>
+	/// Creates the unit.
+	/// </summary>
 	void CreateUnit () {
 		HexCell cell = GetCellUnderCursor();
 		if (cell && !cell.Unit) {
@@ -93,7 +108,10 @@ public class MapEditor : MonoBehaviour {
 
 		}
 	}
-
+		
+	/// <summary>
+	/// Destroies the unit.
+	/// </summary>
 	void DestroyUnit () {
 		HexCell cell = GetCellUnderCursor();
 		if (cell && cell.Unit) {
@@ -101,29 +119,23 @@ public class MapEditor : MonoBehaviour {
 		}
 	}
 		
-
+	/// <summary>
+	/// Sets the edit mode.
+	/// </summary>
 	public void SetEditMode () {
 
 		editMode = !editMode;
 
 	}
 
+	/// <summary>
+	/// Edits the cell.
+	/// </summary>
+	/// <param name="cell">Cell.</param>
 	void EditCell (HexCell cell){
 		cell.Color = activeColor;
 		cell.moveCost = cell.level [newIndex];
 	}
 
-	/**
-	 * updates the next turn
-	 *  TODO: move to a gamemanager
-	 **/
-	public void updateTurn(){
-		turn++;
-		print (turn);
-		// kalla a newTurn
-	}
 
-	protected void newTurn(){
-		
-	}
 }
