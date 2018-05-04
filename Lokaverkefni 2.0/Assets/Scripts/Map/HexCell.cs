@@ -28,9 +28,6 @@ public class HexCell : MonoBehaviour {
 
 	public Unit Unit { get; set; }
 
-	//public Vector3 serial;
-
-	//todo end
 
 	//geymir upplysingar um pathið sem er tekið á milli tveggja cells
 	public HexCell PathFrom { get; set;}
@@ -78,16 +75,19 @@ public class HexCell : MonoBehaviour {
 		}
 	}
 		
-
+	/// <summary>
+	/// Gets the neighbor at a given direction.
+	/// </summary>
+	/// <returns>The neighbor.</returns>
+	/// <param name="direction">Direction.</param>
 	public HexCell GetNeighbor (HexDirection direction) {
 		return neighbors[(int)direction];
 	}
 
-	/*void UpdateDistanceLabel () {
-		UnityEngine.UI.Text label = uiRect.GetComponent<UnityEngine.UI.Text>();
-		label.text = distance == int.MaxValue ? "" :distance.ToString ();
-	}  */
-
+	/// <summary>
+	/// Sets the label.
+	/// </summary>
+	/// <param name="text">Text.</param>
 	public void SetLabel (string text) {
 		UnityEngine.UI.Text label = uiRect.GetComponent<Text>();
 		label.text = text;
@@ -101,23 +101,38 @@ public class HexCell : MonoBehaviour {
 
 
 	//ef cell B er nágranni cell A þá er cell A líka nágranna cell B getum still báða í einu
+	/// <summary>
+	/// Sets cells as neighbours if one cell is in a given direction to the other.
+	/// </summary>
+	/// <param name="direction">Direction.</param>
+	/// <param name="cell">Cell.</param>
 	public void SetNeighbor (HexDirection direction, HexCell cell) {
 		neighbors[(int)direction] = cell;
 		cell.neighbors[(int)direction.Opposite()] = this;
 	}
 
+
+	/// <summary>
+	/// Refresh this instance.
+	/// </summary>
 	void Refresh () {
 		if (chunk) {
 			chunk.Refresh ();
 		}
 	}
 
-	// TODO: sameina
+	/// <summary>
+	/// Disables the highlight.
+	/// </summary>
 	public void DisableHighlight () {
 		Image highlight = uiRect.GetChild (0).GetComponent<Image> ();
 		highlight.enabled = false;
 	}
 
+	/// <summary>
+	/// Enables the highlight.
+	/// </summary>
+	/// <param name="color">Color.</param>
 	public void EnableHighlight (Color color) {
 		Image highlight = uiRect.GetChild (0).GetComponent<Image> ();
 		highlight.color = color;

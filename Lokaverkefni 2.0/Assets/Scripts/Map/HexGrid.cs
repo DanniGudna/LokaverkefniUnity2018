@@ -122,6 +122,11 @@ public class HexGrid : MonoBehaviour {
 		}
 	}
 
+
+	/// <summary>
+	/// Finds the distances to all the heccell from a given cell.
+	/// </summary>
+	/// <param name="cell">Cell.</param>
 	public void FindDistancesTo (HexCell cell){
 		for (int i = 0; i < cells.Length; i++) {
 			cells[i].Distance = cell.coordinates.DistanceTo(cells[i].coordinates);
@@ -186,7 +191,6 @@ public class HexGrid : MonoBehaviour {
 		cell.transform.localPosition = position;
 		cell.coordinates = Coordinates.offsetCoordinates(x, z);
 
-
 		//movemoentCost stilling
 		cell.moveCost = cell.level [cell.index];
 		mesh = cell.GetComponent<MeshRenderer> ();
@@ -222,10 +226,15 @@ public class HexGrid : MonoBehaviour {
 			new Vector2(position.x, position.z);
 		cell.uiRect = label.rectTransform;
 
-
 		AddCellToChunk(x, z, cell);
 	}
 
+	/// <summary>
+	/// Adds the cell to chunk.
+	/// </summary>
+	/// <param name="x">The x coordinate.</param>
+	/// <param name="z">The z coordinate.</param>
+	/// <param name="cell">Cell.</param>
 	void AddCellToChunk (int x, int z, HexCell cell) {
 		int chunkX = x / HexMetrics.chunkSizeX;
 		int chunkZ = z / HexMetrics.chunkSizeZ;
@@ -236,10 +245,13 @@ public class HexGrid : MonoBehaviour {
 		chunk.AddCell(localX + localZ * HexMetrics.chunkSizeX, cell);
 	}
 
+	/// <summary>
+	/// Finds the path.
+	/// </summary>
+	/// <param name="fromCell">From cell.</param>
+	/// <param name="toCell">To cell.</param>
+	/// <param name="speed">Speed.</param>
 	public void FindPath (HexCell fromCell, HexCell toCell, int speed) {
-		// nota thetta ef thu vilt sja algorithmanna 'i vinnslu
-		// StopAllCoroutines ();
-		// StartCoroutine (Search (fromCell, toCell, speed));
 		ClearPath();
 		currentPathFrom = fromCell;
 		currentPathTo = toCell;
@@ -262,6 +274,11 @@ public class HexGrid : MonoBehaviour {
 
 	}
 
+	/// <summary>
+	/// Finds the attackable tiles.
+	/// </summary>
+	/// <param name="fromCell">From cell.</param>
+	/// <param name="range">Range.</param>
 	public void FindAttackableTiles(HexCell fromCell, int range){
 
 		//ClearAttackable ();
@@ -270,6 +287,11 @@ public class HexGrid : MonoBehaviour {
 
 	}
 
+	/// <summary>
+	/// Gets the cell under the ray.
+	/// </summary>
+	/// <returns>The cell.</returns>
+	/// <param name="ray">Ray.</param>
 	public HexCell GetCell (Ray ray) {
 		RaycastHit hit;
 		if (Physics.Raycast(ray, out hit)) {
@@ -292,24 +314,13 @@ public class HexGrid : MonoBehaviour {
 		} else {
 			searchFrontier.Clear ();
 		}
-		//for (int i = 0; i < cells.Length; i++) {
-			// cells [i].Distance = int.MaxValue;
-		//	cells [i].SetLabel(null);
-		//	cells [i].DisableHighlight ();
-	//	}
 
 		fromCell.EnableHighlight (Color.white);
-		//toCell.EnableHighlight (Color.red);
-
-		// ef thu vilt sja algorithmann
-		//WaitForSeconds delay = new WaitForSeconds (1 / 60f);
 		fromCell.SearchPhase = searchFrontierPhase;
 		fromCell.Distance = 0;
 		searchFrontier.Enqueue (fromCell);
 
 		while (searchFrontier.Count > 0) {
-			//ef thu vilt sja algortihmann
-			//yield return delay;
 			HexCell current = searchFrontier.Dequeue ();
 
 			current.SearchPhase += 1;
@@ -334,8 +345,7 @@ public class HexGrid : MonoBehaviour {
 				if (!neighbor.passable) {
 					continue;
 				}
-
-				//int distance = current.Distance;
+					
 				int moveCost = 0;
 				// TODO:
 				moveCost += neighbor.moveCost;
@@ -353,7 +363,6 @@ public class HexGrid : MonoBehaviour {
 					neighbor.Distance = distance;
 					neighbor.PathFrom = current;
 					neighbor.searchHueristic = neighbor.coordinates.DistanceTo (toCell.coordinates);
-					//frontier.Add (neighbor);
 					searchFrontier.Enqueue (neighbor);
 				} else if (distance < neighbor.Distance) {
 					int oldPriority = neighbor.SearchPriority;
@@ -361,29 +370,33 @@ public class HexGrid : MonoBehaviour {
 					neighbor.PathFrom = current;
 					searchFrontier.Change (neighbor, oldPriority);
 				}
-					
-				// frontier.Sort((x , y) => x.SearchPriority.CompareTo(y.SearchPriority));
 			
 			}
 		}
 		return false;
 	}
 
+
+	/// <summary>
+	/// Shows the path.
+	/// </summary>
+	/// <param name="speed">Speed.</param>
 	void ShowPath (int speed) {
 		if (currentPathExists) {
 			HexCell current = currentPathTo;
 			while (current != currentPathFrom) {
 				int turn = (current.Distance-1) / speed;
-				//current.SetLabel(turn.ToString());
 				current.EnableHighlight(Color.white);
 				current = current.PathFrom;
 				current.turnsToReach = turn;
 			}
 		}
 		currentPathFrom.EnableHighlight(Color.blue);
-		//currentPathTo.EnableHighlight(Color.red);
 	}
 
+	/// <summary>
+	/// Clears the path.
+	/// </summary>
 	public void ClearPath () {
 		if (currentPathExists) {
 			HexCell current = currentPathTo;
@@ -406,16 +419,17 @@ public class HexGrid : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Gets the path.
+	/// </summary>
+	/// <returns>The path.</returns>
 	public List<HexCell> GetPath () {
 		if (!currentPathExists) {
 			print ("ekki til");
 			return null;
 		}
 		List<HexCell> path = ListPool<HexCell>.Get();
-		//print (currentPathTo);
-		//print (currentPathFrom);
 		for (HexCell c = currentPathTo; c != currentPathFrom; c = c.PathFrom) {
-			//print (c.PathFrom);
 			path.Add(c);
 		}
 		path.Add(currentPathFrom);
@@ -438,7 +452,6 @@ public class HexGrid : MonoBehaviour {
 		}
 
 		//fromCell.EnableHighlight (Color.white);
-
 		fromCell.SearchPhase = searchFrontierPhase;
 		fromCell.Distance = 0;
 		searchFrontier.Enqueue (fromCell);
@@ -483,9 +496,6 @@ public class HexGrid : MonoBehaviour {
 				if (neighbor.SearchPhase < searchFrontierPhase) {
 					neighbor.SearchPhase = searchFrontierPhase;
 					neighbor.Distance = distance;
-					neighbor.PathFrom = current;
-					//neighbor.searchHueristic = neighbor.coordinates.DistanceTo (toCell.coordinates);
-					//frontier.Add (neighbor);
 					searchFrontier.Enqueue (neighbor);
 				} else if (distance < neighbor.Distance) {
 					int oldPriority = neighbor.SearchPriority;
@@ -499,6 +509,13 @@ public class HexGrid : MonoBehaviour {
 		return reachableTiles;
 	}
 
+
+	/// <summary>
+	/// Attackables the tiles.
+	/// </summary>
+	/// <returns>The tiles.</returns>
+	/// <param name="fromCell">From cell.</param>
+	/// <param name="range">Range.</param>
 	public List<HexCell> attackableTiles ( HexCell fromCell, int range){
 		List<HexCell> attackableTiles = new List<HexCell>();
 		//TODO: gera hagkvaemara!!!
@@ -517,7 +534,10 @@ public class HexGrid : MonoBehaviour {
 		return attackableTiles;
 	}
 
-		
+
+	/// <summary>
+	/// Highlights cells within reach.
+	/// </summary>
 	public void HighlightReach( ){
 		if (tilesInRange != null) {
 			for (int i = 0; i < tilesInRange.Count; i++) {
@@ -526,6 +546,9 @@ public class HexGrid : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Highlights cells in range.
+	/// </summary>
 	public void HighlightInRange( ){
 		for (int i = 0; i < unitsInRange.Count; i++) {
 			if (unitsInRange [i].Unit != null) {
