@@ -98,6 +98,12 @@ public class MapEditor : MonoBehaviour {
 			//Unit unit = Instantiate(unitPrefab);
 			//Archer unit = Instantiate(testPrefab);
 			Unit unit = Instantiate(units[Random.Range(0, units.Length)]);
+
+			// stillir liðið sem kallinn er í, núna er þetta bara radnom fyrir bugtests
+			unit.Team = (Random.Range(0,2));
+			if (unit.Team == 1) {
+				unit.transform.Rotate (0f, 180f, 0f);
+			}
 			unit.transform.SetParent(hexGrid.transform, false);
 			unit.Location = cell;
 

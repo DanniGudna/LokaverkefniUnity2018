@@ -481,6 +481,13 @@ public class HexGrid : MonoBehaviour {
 					continue;
 				}
 
+				//check ef óvina unit er fyrir
+				if (neighbor.Unit != null) {
+					if (neighbor.Unit.Team != fromCell.Unit.Team) {
+						continue;
+					}
+				}
+
 				//int distance = current.Distance;
 				int moveCost = 0;
 				// TODO:

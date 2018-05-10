@@ -24,6 +24,8 @@ public class Unit : MonoBehaviour {
 	protected bool movable;
 	// type of unit
 	protected string type;
+	// team of unit, for now it is either team 0 or 1
+	protected int team;
 
 	public int Speed {
 		get {
@@ -75,6 +77,18 @@ public class Unit : MonoBehaviour {
 		}
 	}
 
+	public int Team {
+		get {
+			return team;
+		}
+
+		set { 
+			// TODO: breyta hvernig lið eru skilgreind en ef 0 og 1 þá check sem stillir allt sem 0 eða 1
+			team = value;
+		}
+	}
+
+
 	public Unit(){
 		//default fyrir allt er 1
 		speed = 1;
@@ -84,14 +98,14 @@ public class Unit : MonoBehaviour {
 		range = 1;
 	}
 
-	public void setSpeed(int newSpeed){
-		speed = newSpeed;
-	}
+	//public void setSpeed(int newSpeed){
+	//	speed = newSpeed;
+	//}
 
-	void Awake () {
+	//void Awake () {
 		//this.gameObject.transform.GetChild(0);
 		//this.GetComponent<
-	}
+	//}
 
 	/// <summary>
 	/// Gets or sets the location.
