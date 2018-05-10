@@ -34,7 +34,6 @@ public class GameUI : MonoBehaviour {
 	 **/
 	public void updateTurn(){
 		turn++;
-		print (turn);
 		text.UpdateTurnText (turn);
 		// kalla a newTurn
 	}
@@ -80,14 +79,14 @@ public class GameUI : MonoBehaviour {
 		if (UpdateCurrentCell()) {
 			if (currentCell.Unit != null) {
 				selectedUnit = currentCell.Unit;
-				text.NewSelectedUnit (selectedUnit);
+				text.UpdateUnitInfoPanel (selectedUnit);
 				if (selectedUnit.CurrentCooldown < turn) {
 					SoundManager.instance.PlayRandomVoiceline (selectedVoicelines);
 					if (selectedUnit != null) {
 						grid.FindReachableTiles (currentCell, selectedUnit.Speed);
+						grid.FindAttackableTiles (currentCell, selectedUnit.Range);
 					}
 				} else {
-					print ("upps");
 					selectedUnit = null;
 					currentCell = null;
 				}
@@ -107,7 +106,9 @@ public class GameUI : MonoBehaviour {
 				grid.FindAttackableTiles (grid.CurrentPathTo, selectedUnit.Range);
 				// TODO: finna betri lausn ekki kalla 2 #á þessi föll #í hvert skipti
 				grid.HighlightTilesInRange();
+				grid.HighlightAttackableTiles ();
 				grid.ShowPath ();
+
 
 			} else {
 				//grid.ClearPath ();
@@ -132,25 +133,24 @@ public class GameUI : MonoBehaviour {
 			grid.ClearPath();
 			grid.ClearAttackableTiles ();
 			selectedUnit = null;
+			text.ClearTextBox ();
 		}
 	}
 
 	void DoAttackMove (Unit target) {
+		SoundManager.instance.PlayRandomVoiceline (attackingVoicelines);
 		if (grid.HasPath) {
 			// selectedUnit.Location = currentCell;
-			SoundManager.instance.PlayRandomVoiceline (attackingVoicelines);
+			//SoundManager.instance.PlayRandomVoiceline (attackingVoicelines);
 			selectedUnit.Travel(grid.GetPath());
 			// uppfæra cooldown á kall sem var að hreyfast 
-			selectedUnit.CurrentCooldown = turn;
 
-			grid.ClearTilesInRange ();
-			grid.ClearPath();
-			grid.ClearAttackableTiles ();
 
 		}
 		// check for safety
 		if(target != null){
-			target.takeDamage (selectedUnit.Damage);
+			//target.takeDamage (selectedUnit.Damage);
+			target.Health = selectedUnit.Damage;
 		}
 
 		// lets play the appropriate sound
@@ -169,10 +169,15 @@ public class GameUI : MonoBehaviour {
 		}
 
 		checkForDeath (target);
+		selectedUnit.CurrentCooldown = turn;
+
+		grid.ClearTilesInRange ();
+		grid.ClearPath();
+		grid.ClearAttackableTiles ();
 		
 
-
 		selectedUnit = null;
+		text.ClearTextBox ();
 	}
 
 	void checkForDeath(Unit unit){

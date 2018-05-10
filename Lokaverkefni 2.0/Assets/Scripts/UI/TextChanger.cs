@@ -23,7 +23,7 @@ public class TextChanger : MonoBehaviour {
 	
 
 
-	public void NewSelectedUnit(Unit unit){
+	public void UpdateUnitInfoPanel(Unit unit){
 		// stillum nafnið á kallinum
 		target = this.gameObject.transform.GetChild(1).GetComponent<Text> ();
 		target.text = unit.Type;
@@ -43,6 +43,31 @@ public class TextChanger : MonoBehaviour {
 		// Stillum hvað cooldownið er eftir hverja hreyfingu
 		target = this.gameObject.transform.GetChild(11).GetComponent<Text> ();
 		target.text = unit.Cooldown.ToString ();
+		// Stillum hvaða lið kallinn er í
+		//target = instance.gameObject.transform.GetChild(13).GetComponent<Text> ();
+		//target.text = unit.Team;
+	}
+
+	public void ClearTextBox(){
+		// stillum nafnið á kallinum
+		target = this.gameObject.transform.GetChild(1).GetComponent<Text> ();
+		target.text = "";
+		// Stillum lífið á kallinum
+		target = this.gameObject.transform.GetChild(3).GetComponent<Text> ();
+		target.text = "";
+		// Stillum hversu langt það er þar til kallinn má hreyfa sig aftur
+		target = this.gameObject.transform.GetChild(5).GetComponent<Text> ();
+		// TODOD : stilla útriekningar aðferð frekar
+		target.text = "";
+		// Stillum skaðann sem kallinn gerir
+		target = this.gameObject.transform.GetChild(7).GetComponent<Text> ();
+		target.text = "";
+		// Stillum Rangeið hjá kallinum
+		target = this.gameObject.transform.GetChild(9).GetComponent<Text> ();
+		target.text = "";
+		// Stillum hvað cooldownið er eftir hverja hreyfingu
+		target = this.gameObject.transform.GetChild(11).GetComponent<Text> ();
+		target.text = "";
 		// Stillum hvaða lið kallinn er í
 		//target = instance.gameObject.transform.GetChild(13).GetComponent<Text> ();
 		//target.text = unit.Team;

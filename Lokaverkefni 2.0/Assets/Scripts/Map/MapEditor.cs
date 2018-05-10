@@ -38,7 +38,7 @@ public class MapEditor : MonoBehaviour {
 			if (GetCellUnderCursor () != null) {
 				if (GetCellUnderCursor ().Unit != null) {
 					canvasHoover.enabled = true;
-					hoover.NewSelectedUnit (GetCellUnderCursor ().Unit);
+					hoover.UpdateUnitInfoPanel (GetCellUnderCursor ().Unit);
 				} else {
 					canvasHoover.enabled = false;
 				}
