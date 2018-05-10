@@ -410,7 +410,7 @@ public class HexGrid : MonoBehaviour {
 			current.DisableHighlight();
 			currentPathExists = false;
 		}
-		//currentPathFrom = currentPathTo = null;
+		currentPathFrom = currentPathTo = null;
 	}
 
 	public void ShowUI (bool visible) {
