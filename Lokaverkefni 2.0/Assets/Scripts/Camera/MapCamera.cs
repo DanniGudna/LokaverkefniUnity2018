@@ -39,7 +39,8 @@ public class MapCamera : MonoBehaviour {
 		//rotating
 		float rotationDelta = Input.GetAxis("Rotation");
 		if (rotationDelta != 0f) {
-			AdjustRotation(rotationDelta);
+			// TODO: ekki hafa m'inus
+			AdjustRotation(-rotationDelta);
 		}
 
 		//moving

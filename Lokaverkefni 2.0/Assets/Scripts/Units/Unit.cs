@@ -199,7 +199,6 @@ public class Unit : MonoBehaviour {
 			int yEnd = Mathf.Min(sp, (-i + sp));
 			for (int j= yStart; j <= yEnd; j++) {
 				int z = -i - j;
-				print ("x " + i + " y " + z + " z " + j);
 
 				HexCell cellInRange = hexGrid.GetCellFromCoordinates (i, j);
 
@@ -217,9 +216,7 @@ public class Unit : MonoBehaviour {
 	//}
 
 	public void takeDamage(int damage){
-		print ("hp " + this.health);
 		this.Health = damage;
-		print ("hp after " + this.health);
 	}
 
 

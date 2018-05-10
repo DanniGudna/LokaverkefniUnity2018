@@ -34,7 +34,6 @@ public class GameUI : MonoBehaviour {
 	 **/
 	public void updateTurn(){
 		turn++;
-		print (turn);
 		text.UpdateTurnText (turn);
 		// kalla a newTurn
 	}
@@ -71,8 +70,8 @@ public class GameUI : MonoBehaviour {
 	/// </summary>
 	void DoSelection () {
 		grid.ClearPath();
-		grid.ClearReach ();
-		grid.ClearAttackable ();
+		grid.ClearTilesInRange ();
+		grid.ClearAttackableTiles ();
 
 
 
@@ -80,14 +79,14 @@ public class GameUI : MonoBehaviour {
 		if (UpdateCurrentCell()) {
 			if (currentCell.Unit != null) {
 				selectedUnit = currentCell.Unit;
-				text.NewSelectedUnit (selectedUnit);
+				text.UpdateUnitInfoPanel (selectedUnit);
 				if (selectedUnit.CurrentCooldown < turn) {
 					SoundManager.instance.PlayRandomVoiceline (selectedVoicelines);
 					if (selectedUnit != null) {
 						grid.FindReachableTiles (currentCell, selectedUnit.Speed);
+						grid.FindAttackableTiles (currentCell, selectedUnit.Range);
 					}
 				} else {
-					print ("upps");
 					selectedUnit = null;
 					currentCell = null;
 				}
@@ -99,12 +98,17 @@ public class GameUI : MonoBehaviour {
 	}
 
 	void DoPathfinding () {
-		grid.ClearAttackable ();
-		grid.HighlightReach();
+		grid.ClearAttackableTiles ();
+		grid.HighlightTilesInRange();
 		if (UpdateCurrentCell()) {
 			if (currentCell && selectedUnit.IsValidDestination(currentCell)) {
 				grid.FindPath (selectedUnit.Location, currentCell, selectedUnit.Speed);
 				grid.FindAttackableTiles (grid.CurrentPathTo, selectedUnit.Range);
+				// TODO: finna betri lausn ekki kalla 2 #á þessi föll #í hvert skipti
+				grid.HighlightTilesInRange();
+				grid.HighlightAttackableTiles ();
+				grid.ShowPath ();
+
 
 			} else {
 				//grid.ClearPath ();
@@ -125,29 +129,28 @@ public class GameUI : MonoBehaviour {
 			// uppfæra cooldown á kall sem var að hreyfast 
 			selectedUnit.CurrentCooldown = turn;
 
-			grid.ClearReach ();
+			grid.ClearTilesInRange ();
 			grid.ClearPath();
-			grid.ClearAttackable ();
+			grid.ClearAttackableTiles ();
 			selectedUnit = null;
+			text.ClearTextBox ();
 		}
 	}
 
 	void DoAttackMove (Unit target) {
+		SoundManager.instance.PlayRandomVoiceline (attackingVoicelines);
 		if (grid.HasPath) {
 			// selectedUnit.Location = currentCell;
-			SoundManager.instance.PlayRandomVoiceline (attackingVoicelines);
+			//SoundManager.instance.PlayRandomVoiceline (attackingVoicelines);
 			selectedUnit.Travel(grid.GetPath());
 			// uppfæra cooldown á kall sem var að hreyfast 
-			selectedUnit.CurrentCooldown = turn;
 
-			grid.ClearReach ();
-			grid.ClearPath();
-			grid.ClearAttackable ();
 
 		}
 		// check for safety
 		if(target != null){
-			target.takeDamage (selectedUnit.Damage);
+			//target.takeDamage (selectedUnit.Damage);
+			target.Health = selectedUnit.Damage;
 		}
 
 		// lets play the appropriate sound
@@ -166,10 +169,15 @@ public class GameUI : MonoBehaviour {
 		}
 
 		checkForDeath (target);
+		selectedUnit.CurrentCooldown = turn;
+
+		grid.ClearTilesInRange ();
+		grid.ClearPath();
+		grid.ClearAttackableTiles ();
 		
 
-
 		selectedUnit = null;
+		text.ClearTextBox ();
 	}
 
 	void checkForDeath(Unit unit){
@@ -181,7 +189,7 @@ public class GameUI : MonoBehaviour {
 
 	void Update () {
 		if (!EventSystem.current.IsPointerOverGameObject()) {
-			if (Input.GetMouseButtonDown (0)) {
+			if (Input.GetMouseButtonDown (0)) {;
 				DoSelection ();
 			} else if (selectedUnit) {
 				if (Input.GetMouseButtonDown (1)) {
@@ -189,7 +197,6 @@ public class GameUI : MonoBehaviour {
 					// TODO: hvad ef kall vill ekki hrefa sig?
 					if (!attacking) {
 						if (grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition)) == grid.CurrentPathTo) {
-							
 							DoMove ();
 							updateTurn ();
 						

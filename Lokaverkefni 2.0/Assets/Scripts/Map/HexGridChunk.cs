@@ -17,18 +17,18 @@ public class HexGridChunk : MonoBehaviour {
 		cells = new HexCell[HexMetrics.chunkSizeX * HexMetrics.chunkSizeZ];
 	}
 
-	//void Start () {
-		// hexMesh.Triangulate(cells);
-	//}
 
-
+	/// <summary>
+	/// Adds the cell.
+	/// </summary>
+	/// <param name="index">Index.</param>
+	/// <param name="cell">Cell.</param>
 	public void AddCell (int index, HexCell cell) {
 		cells[index] = cell;
 		cell.chunk = this;
 		cell.transform.SetParent(transform, false);
 		cell.uiRect.SetParent(gridCanvas.transform, false);
-		cell.SetLabel(cell.coordinates.ToString
-			());
+
 	}
 
 	public void Refresh () {

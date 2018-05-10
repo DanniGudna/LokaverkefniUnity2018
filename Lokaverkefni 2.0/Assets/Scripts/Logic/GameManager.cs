@@ -44,6 +44,5 @@ public class GameManager : MonoBehaviour {
 	 **/
 	public void nextTurn(){
 		turn++;
-		print (turn);
 	}
 }
