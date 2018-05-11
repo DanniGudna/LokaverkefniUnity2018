@@ -17,6 +17,12 @@ public class MapEditor : MonoBehaviour {
 
 	public Unit[] units;
 
+	public Unit[] team0;
+
+	public Unit[] team1;
+
+
+
 	//TODO: ekki hafa h'er heldur 'i gameManager
 	protected int turn = 1;
 
@@ -95,12 +101,13 @@ public class MapEditor : MonoBehaviour {
 	void CreateUnit () {
 		HexCell cell = GetCellUnderCursor();
 		if (cell && !cell.Unit) {
-			//Unit unit = Instantiate(unitPrefab);
-			//Archer unit = Instantiate(testPrefab);
-			Unit unit = Instantiate(units[Random.Range(0, units.Length)]);
-
 			// stillir liðið sem kallinn er í, núna er þetta bara radnom fyrir bugtests
-			unit.Team = (Random.Range(0,2));
+			int team = Random.Range (0, 2);
+
+			//Unit unit = Instantiate(units[Random.Range(0, units.Length)]);
+			Unit unit = Instantiate(units[(Random.Range(0, 3)) + (team*3)]);
+
+			unit.Team = team;
 			if (unit.Team == 1) {
 				unit.transform.Rotate (0f, 180f, 0f);
 			}

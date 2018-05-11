@@ -279,11 +279,11 @@ public class HexGrid : MonoBehaviour {
 	/// </summary>
 	/// <param name="fromCell">From cell.</param>
 	/// <param name="range">Range.</param>
-	public void FindAttackableTiles(HexCell fromCell, int range){
+	public void FindAttackableTiles(HexCell fromCell, int range, int team){
 
 		//ClearAttackable ();
 		unitsInRange = attackableTiles (fromCell, range);
-		HighlightAttackableTiles ();
+		HighlightAttackableTiles (team);
 
 	}
 
@@ -530,12 +530,11 @@ public class HexGrid : MonoBehaviour {
 			cells[i].Distance = fromCell.coordinates.DistanceTo(cells[i].coordinates);
 			//cells[i].SetLabel(cells[i].Distance.ToString());
 			//if (cells[i].Distance > range){
-			//	break;
+			//	continue;
 			//}
 			if (cells[i].Distance <= range){
 				attackableTiles.Add (cells [i]);
 			}
-			//attackableTiles.Add (cells [i]);
 
 		}
 		return attackableTiles;
@@ -556,11 +555,13 @@ public class HexGrid : MonoBehaviour {
 	/// <summary>
 	/// Highlights cells in range.
 	/// </summary>
-	public void HighlightAttackableTiles( ){
+	public void HighlightAttackableTiles(int team ){
 		for (int i = 0; i < unitsInRange.Count; i++) {
 			if (unitsInRange [i].Unit != null) {
-				unitsInRange [i].EnableHighlight (Color.red);
-				unitsInRange [i].attackable = true;
+				if (unitsInRange [i].Unit.Team != team) {
+					unitsInRange [i].EnableHighlight (Color.red);
+					unitsInRange [i].attackable = true;
+				}
 			}
 		}
 	}

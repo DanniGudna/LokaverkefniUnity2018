@@ -84,7 +84,7 @@ public class GameUI : MonoBehaviour {
 					SoundManager.instance.PlayRandomVoiceline (selectedVoicelines);
 					if (selectedUnit != null) {
 						grid.FindReachableTiles (currentCell, selectedUnit.Speed);
-						grid.FindAttackableTiles (currentCell, selectedUnit.Range);
+						grid.FindAttackableTiles (currentCell, selectedUnit.Range, selectedUnit.Team);
 					}
 				} else {
 					selectedUnit = null;
@@ -103,10 +103,10 @@ public class GameUI : MonoBehaviour {
 		if (UpdateCurrentCell()) {
 			if (currentCell && selectedUnit.IsValidDestination(currentCell)) {
 				grid.FindPath (selectedUnit.Location, currentCell, selectedUnit.Speed);
-				grid.FindAttackableTiles (grid.CurrentPathTo, selectedUnit.Range);
+				grid.FindAttackableTiles (grid.CurrentPathTo, selectedUnit.Range, selectedUnit.Team);
 				// TODO: finna betri lausn ekki kalla 2 #á þessi föll #í hvert skipti
 				grid.HighlightTilesInRange();
-				grid.HighlightAttackableTiles ();
+				grid.HighlightAttackableTiles ( selectedUnit.Team);
 				grid.ShowPath ();
 
 
@@ -196,12 +196,10 @@ public class GameUI : MonoBehaviour {
 					// Ef kall er ekki buinn ad hreyfa sig getur hann ekki gert aras
 					// TODO: hvad ef kall vill ekki hrefa sig?
 					if (grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition)) == grid.CurrentPathTo) {
-						print ("vitlaustping");
 						DoMove ();
 						updateTurn ();
 						
 					} else if (grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition)).attackable) {
-						print ("ping");
 						HexCell cellTarget = grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition));
 						Unit target = cellTarget.Unit;
 						DoAttackMove (target);
