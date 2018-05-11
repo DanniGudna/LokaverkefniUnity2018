@@ -84,7 +84,7 @@ public class GameUI : MonoBehaviour {
 					SoundManager.instance.PlayRandomVoiceline (selectedVoicelines);
 					if (selectedUnit != null) {
 						grid.FindReachableTiles (currentCell, selectedUnit.Speed);
-						grid.FindAttackableTiles (currentCell, selectedUnit.Range);
+						grid.FindAttackableTiles (currentCell, selectedUnit.Range, selectedUnit.Team);
 					}
 				} else {
 					selectedUnit = null;
@@ -103,10 +103,10 @@ public class GameUI : MonoBehaviour {
 		if (UpdateCurrentCell()) {
 			if (currentCell && selectedUnit.IsValidDestination(currentCell)) {
 				grid.FindPath (selectedUnit.Location, currentCell, selectedUnit.Speed);
-				grid.FindAttackableTiles (grid.CurrentPathTo, selectedUnit.Range);
+				grid.FindAttackableTiles (grid.CurrentPathTo, selectedUnit.Range, selectedUnit.Team);
 				// TODO: finna betri lausn ekki kalla 2 #á þessi föll #í hvert skipti
 				grid.HighlightTilesInRange();
-				grid.HighlightAttackableTiles ();
+				grid.HighlightAttackableTiles ( selectedUnit.Team);
 				grid.ShowPath ();
 
 
@@ -143,7 +143,6 @@ public class GameUI : MonoBehaviour {
 			// selectedUnit.Location = currentCell;
 			//SoundManager.instance.PlayRandomVoiceline (attackingVoicelines);
 			selectedUnit.Travel(grid.GetPath());
-			// uppfæra cooldown á kall sem var að hreyfast 
 
 
 		}
@@ -193,25 +192,23 @@ public class GameUI : MonoBehaviour {
 				DoSelection ();
 			} else if (selectedUnit) {
 				if (Input.GetMouseButtonDown (1)) {
+					print (grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition)).attackable);
 					// Ef kall er ekki buinn ad hreyfa sig getur hann ekki gert aras
 					// TODO: hvad ef kall vill ekki hrefa sig?
-					if (!attacking) {
-						if (grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition)) == grid.CurrentPathTo) {
-							DoMove ();
-							updateTurn ();
+					if (grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition)) == grid.CurrentPathTo) {
+						DoMove ();
+						updateTurn ();
 						
-						} else if (grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition)).attackable) {
-							HexCell cellTarget = grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition));
-							Unit target = cellTarget.Unit;
-							DoAttackMove (target);
-							updateTurn ();
-						} else {
-							DoPathfinding ();
-							//grid.FindAttackableTiles (grid.CurrentPathTo, selectedUnit.Range);
-						}
+					} else if (grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition)).attackable) {
+						HexCell cellTarget = grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition));
+						Unit target = cellTarget.Unit;
+						DoAttackMove (target);
+						updateTurn ();
 					} else {
-				//	DoPathfinding ();
+						DoPathfinding ();
+						//grid.FindAttackableTiles (grid.CurrentPathTo, selectedUnit.Range);
 					}
+					
 				}
 			}
 		}

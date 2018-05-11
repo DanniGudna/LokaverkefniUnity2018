@@ -44,8 +44,8 @@ public class TextChanger : MonoBehaviour {
 		target = this.gameObject.transform.GetChild(11).GetComponent<Text> ();
 		target.text = unit.Cooldown.ToString ();
 		// Stillum hvaða lið kallinn er í
-		//target = instance.gameObject.transform.GetChild(13).GetComponent<Text> ();
-		//target.text = unit.Team;
+		target = this.gameObject.transform.GetChild(13).GetComponent<Text> ();
+		target.text = unit.Team.ToString();
 	}
 
 	public void ClearTextBox(){
@@ -69,8 +69,8 @@ public class TextChanger : MonoBehaviour {
 		target = this.gameObject.transform.GetChild(11).GetComponent<Text> ();
 		target.text = "";
 		// Stillum hvaða lið kallinn er í
-		//target = instance.gameObject.transform.GetChild(13).GetComponent<Text> ();
-		//target.text = unit.Team;
+		target = this.gameObject.transform.GetChild(13).GetComponent<Text> ();
+		target.text = "";
 	}
 
 
