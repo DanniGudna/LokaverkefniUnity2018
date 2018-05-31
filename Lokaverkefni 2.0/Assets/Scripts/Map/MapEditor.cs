@@ -21,6 +21,10 @@ public class MapEditor : MonoBehaviour {
 
 	public Unit[] team1;
 
+	public int[] initialBlueUnitCells;
+
+	public int[] initialRedUnitCells;
+
 
 
 	//TODO: ekki hafa h'er heldur 'i gameManager
@@ -35,6 +39,8 @@ public class MapEditor : MonoBehaviour {
 	void Awake () {
 		SelectColor(0);
 		canvasHoover.enabled = false;
+		CreateInitalUnit (initialBlueUnitCells, 0);
+		CreateInitalUnit (initialRedUnitCells, 1);
 	}
 
 	void Update () {
@@ -55,7 +61,7 @@ public class MapEditor : MonoBehaviour {
 			}
 			if (Input.GetKeyDown(KeyCode.U)) {
 				
-				CreateUnit();
+				CreateRandomUnit();
 				return;
 			}
 			if (Input.GetKeyDown(KeyCode.I)) {
@@ -74,6 +80,7 @@ public class MapEditor : MonoBehaviour {
 
 	void HandleInput () {
 		HexCell currentCell = GetCellUnderCursor();
+		print (currentCell.index);
 		if (currentCell) {
 			if(editMode){
 			EditCell (currentCell); 
@@ -98,7 +105,7 @@ public class MapEditor : MonoBehaviour {
 	/// <summary>
 	/// Creates the unit.
 	/// </summary>
-	void CreateUnit () {
+	void CreateRandomUnit () {
 		HexCell cell = GetCellUnderCursor();
 		if (cell && !cell.Unit) {
 			// stillir liðið sem kallinn er í, núna er þetta bara radnom fyrir bugtests
@@ -115,6 +122,44 @@ public class MapEditor : MonoBehaviour {
 			unit.Location = cell;
 
 		}
+	}
+
+
+	//ath
+	void CreateInitalUnit (int[] cells, int team) {
+		//if team is red than they are 3 indexes up in the unti array
+		int buffer = team * 3;
+		//spearmen
+		for (int i = 0; i < 5; i++) {
+			Unit unit = Instantiate (units [2+buffer]);
+			unit.Team = team;
+			unit.transform.SetParent(hexGrid.transform, false);
+			unit.Location = hexGrid.cells[cells[i]];
+			if (unit.Team == 1) {
+				unit.transform.Rotate (0f, 180f, 0f);
+			}
+		}
+		//Archer
+		for (int i = 5; i < 8; i++) {
+			Unit unit = Instantiate (units [0 + buffer]);
+			unit.Team = team;
+			unit.transform.SetParent(hexGrid.transform, false);
+			unit.Location = hexGrid.cells[cells[i]];
+			if (unit.Team == 1) {
+				unit.transform.Rotate (0f, 180f, 0f);
+			}
+		}
+		//spearmen
+		for (int i = 8; i < cells.Length; i++) {
+			Unit unit = Instantiate (units [1+ buffer]);
+			unit.Team = team;
+			unit.transform.SetParent(hexGrid.transform, false);
+			unit.Location = hexGrid.cells[cells[i]];
+			if (unit.Team == 1) {
+				unit.transform.Rotate (0f, 180f, 0f);
+			}
+		}
+
 	}
 		
 	/// <summary>

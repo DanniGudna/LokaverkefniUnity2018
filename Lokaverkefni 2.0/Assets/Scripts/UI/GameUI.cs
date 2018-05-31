@@ -192,7 +192,6 @@ public class GameUI : MonoBehaviour {
 				DoSelection ();
 			} else if (selectedUnit) {
 				if (Input.GetMouseButtonDown (1)) {
-					print (grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition)).attackable);
 					// Ef kall er ekki buinn ad hreyfa sig getur hann ekki gert aras
 					// TODO: hvad ef kall vill ekki hrefa sig?
 					if (grid.GetCell (Camera.main.ScreenPointToRay (Input.mousePosition)) == grid.CurrentPathTo) {
