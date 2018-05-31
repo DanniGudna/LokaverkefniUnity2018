@@ -29,7 +29,8 @@ public class HexGrid : MonoBehaviour {
 	public HexGridChunk chunkPrefab;
 	HexMesh hexMesh;
 
-	HexCell[] cells;
+	//ath breyta- ekki hafa public, breytt eftir að inital unit setup verður breytt
+	public HexCell[] cells;
 	HexGridChunk[] chunks;
 
 	List<HexCell> tilesInRange;
