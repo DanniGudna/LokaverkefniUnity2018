@@ -8,6 +8,7 @@ public class GameUI : MonoBehaviour {
 	HexCell currentCell;
 	MapEditor map;
 	public TextChanger text;
+	private int currentTeamTurn = 0;
 
 	public AudioClip[] selectedVoicelines;
 	public AudioClip[] walkingVoicelines;
@@ -26,7 +27,7 @@ public class GameUI : MonoBehaviour {
 	//bool hasAttacked = false;
 	bool attacking = false;
 
-	protected int turn = 1;
+	protected int turn = 0;
 
 	/**
 	 * updates the next turn
@@ -35,6 +36,8 @@ public class GameUI : MonoBehaviour {
 	public void updateTurn(){
 		turn++;
 		text.UpdateTurnText (turn);
+		currentTeamTurn = turn % 2;
+		print (currentTeamTurn);
 		// kalla a newTurn
 	}
 
@@ -74,13 +77,12 @@ public class GameUI : MonoBehaviour {
 		grid.ClearAttackableTiles ();
 
 
-
-
+		print (currentTeamTurn);
 		if (UpdateCurrentCell()) {
-			if (currentCell.Unit != null) {
+			if (currentCell.Unit != null && currentCell.Unit.Team == currentTeamTurn) {
 				selectedUnit = currentCell.Unit;
 				text.UpdateUnitInfoPanel (selectedUnit);
-				if (selectedUnit.CurrentCooldown < turn) {
+				if (selectedUnit.CurrentCooldown < turn + 1) {
 					SoundManager.instance.PlayRandomVoiceline (selectedVoicelines);
 					if (selectedUnit != null) {
 						grid.FindReachableTiles (currentCell, selectedUnit.Speed);
@@ -168,7 +170,7 @@ public class GameUI : MonoBehaviour {
 		}
 
 		checkForDeath (target);
-		selectedUnit.CurrentCooldown = turn;
+		selectedUnit.CurrentCooldown = turn + 1;
 
 		grid.ClearTilesInRange ();
 		grid.ClearPath();

@@ -75,8 +75,9 @@ public class TextChanger : MonoBehaviour {
 
 
 	public void UpdateTurnText (int turn){
+		int displayTurn = turn + 1;
 		target = this.gameObject.transform.GetChild(14).GetComponent<Text> ();
-		target.text = "Turn: " + turn.ToString ();
+		target.text = "Turn: " + displayTurn.ToString ();
 	}
 		
 }
