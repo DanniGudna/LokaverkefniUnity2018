@@ -80,7 +80,6 @@ public class MapEditor : MonoBehaviour {
 
 	void HandleInput () {
 		HexCell currentCell = GetCellUnderCursor();
-		print (currentCell.index);
 		if (currentCell) {
 			if(editMode){
 			EditCell (currentCell); 

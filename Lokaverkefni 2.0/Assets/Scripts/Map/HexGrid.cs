@@ -426,7 +426,6 @@ public class HexGrid : MonoBehaviour {
 	/// <returns>The path.</returns>
 	public List<HexCell> GetPath () {
 		if (!currentPathExists) {
-			print ("ekki til");
 			return null;
 		}
 		List<HexCell> path = ListPool<HexCell>.Get();
