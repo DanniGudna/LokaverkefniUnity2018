@@ -2,4 +2,4 @@
 Unity 3d Lokaverkefni
 
 
-Til að spila leikinn þarf að ná í Lokaverkefni.exe og Lokaverkefni_Data folderinn. Þeir þurfa svo að vera í sömu möppu svo hægt sé að keyra
+Til að spila leikinn þarf að ná í Leikurinn möppuna.  Svo þarf bara að opna Lokaverkefni.exe til að keyra leikinn
