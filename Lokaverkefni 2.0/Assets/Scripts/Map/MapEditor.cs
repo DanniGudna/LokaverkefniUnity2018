@@ -189,5 +189,9 @@ public class MapEditor : MonoBehaviour {
 		cell.moveCost = cell.level [newIndex];
 	}
 
+	public void quit(){
+		Application.Quit ();
+	}
+
 
 }
